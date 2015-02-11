@@ -4,4 +4,77 @@
         <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
         <meta content="utf-8" http-equiv="encoding">
     </head>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <script>
+        var canvas;
+        var canvasContext;
+        var ballX = 75, ballY = 75;
+        var ballSpeedX = 6;
+        var ballSpeedY = 6;
+
+        window.onload = function()
+        {
+            // window.onload runs automatically when the page finishes loading.
+            //console.log("Hello world!");
+
+            // Save the canvas for dimensions and its 2d context for drawing to it.
+            canvas = document.getElementById('gameCanvas');
+            canvasContext = canvas.getContext('2d');
+
+            var framesPerSecond = 30;
+
+            // Calls function every N number of milliseconds.
+            setInterval(function() // Anonymous function for calling multiple functions for each interval.
+                {
+                    moveEverything();
+                    drawEverything();
+                }, 1000/framesPerSecond); // 1000 equals one sec. Divide by frames to get fps.
+        };
+
+        var moveEverything = function()
+        {
+            if (ballX > canvas.width || ballX < 0)
+            {
+                ballSpeedX *= -1;
+            }
+
+            if (ballY > canvas.height || ballY < 0)
+            {
+                ballSpeedY *= -1;
+            }
+
+            ballX += ballSpeedX; // moves the ball horizontally by 2.
+            ballY += ballSpeedY;
+            //console.log(ballSpeedX);
+            //console.log("ballX is now: " + ballX);
+        };
+
+        var colorRect = function(topLeftX, topLeftY, boxWidth, boxHeight, fillColor)
+        {
+            canvasContext.fillStyle = fillColor;
+            canvasContext.fillRect(topLeftX, topLeftY, boxWidth, boxHeight);
+        };
+
+        var colorCircle = function(centerX, centerY, radius, fillColor)
+        {
+            // Draw a white circle.
+            canvasContext.fillStyle = fillColor;
+            canvasContext.beginPath(); // Tells browser that this is a new, separate shape.
+            // x, y (from center), radius, start, and end angles. True means draw counterclockwise.
+            canvasContext.arc(centerX, centerY, radius, 0, Math.PI*2, true); 
+            canvasContext.fill(); // color in shape formed since beginPath().
+        };
+
+        var drawEverything = function()
+        {
+            // Clear the game view by filling it with black
+            colorRect(0, 0, canvas.width, canvas.height, '#000000');
+
+            // Draw paddle.
+            colorRect(0, 250, 10, 100, '#FFFFFF');
+
+            // Draw a white circle.
+            colorCircle(ballX, ballY, 10, '#FFFFFF');
+        };
+    </script>
 </html>
