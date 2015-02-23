@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+        <meta content="utf-8" http-equiv="encoding">
+    </head>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <script>
+        var canvas;
+        var canvasContext;
+
+        var ballX = 75;
+        var ballY = 75;
+        var ballSpeedX = 6; 
+        var ballSpeedY = 6;
+
+        var paddleX = 0;
+
+        const PADDLE_WIDTH = 100;
+        const PADDLE_THICKNESS = 10;
+        const PADDLE_Y = 540;
+
+        window.onload = function() {            
+            // Save the canvas for dimensions and its 2d context for drawing to it.
+            canvas = document.getElementById('gameCanvas');
+            canvasContext = canvas.getContext('2d');
+            paddleX = (canvas.width / 2) - (PADDLE_WIDTH/2);
+
+            var framesPerSecond = 30;
+
+            // Calls function every N number of milliseconds.
+            setInterval(function() // Anonymous function for calling multiple functions for each interval.
+                {
+                    moveEverything();
+                    drawEverything();
+                }, 1000/framesPerSecond); // 1000 equals one sec. Divide by frames to get fps.
+
+            // Each time the mouse is moved the coordinates are calculated and the paddle is moved from center
+            // where the mouse is at horizontally.
+            canvas.addEventListener('mousemove', 
+                function(evt)
+                {
+                    var mousePos = calculateMousePos(evt);
+                    paddleX = mousePos.x - (PADDLE_WIDTH/2);
+
+                });
+        }
+
+        function drawEverything() {
+            colorRect(0, 0, canvas.width, canvas.height, 'black');
+            colorCircle(ballX, ballY, 5, 'white');
+
+            colorRect(paddleX, PADDLE_Y, PADDLE_WIDTH, PADDLE_THICKNESS, 'white');
+        }
+
+        function colorRect(topLeftX, topLeftY, boxWidth, boxHeight, fillColor) {
+            canvasContext.fillStyle = fillColor;
+            canvasContext.fillRect(topLeftX, topLeftY, boxWidth, boxHeight);
+        }
+
+        function colorCircle(centerX, centerY, radius, fillColor) {
+            canvasContext.fillStyle = fillColor;
+            canvasContext.beginPath(); // Tells browser that this is a new, separate shape.
+            // x, y (from center), radius, start, and end angles. True means draw counterclockwise.
+            canvasContext.arc(centerX, centerY, radius, 0, Math.PI*2, true); 
+            canvasContext.fill(); // color in shape formed since beginPath().
+        }
+
+        function moveEverything() {
+            // Ball collidges with left edge, reverse ball.
+            if (ballX < 0) {
+                ballSpeedX *= -1;
+            }
+
+            // Ball collides with right edge, reverse ball.
+            if (ballX > canvas.width) {
+                ballSpeedX *= -1;
+            }
+
+            // Ball collides with top edge, reverse ball.
+            if (ballY < 0) {
+                ballSpeedY *= -1;
+            }
+
+            // Ball collides with bottom edge, reset ball.
+            if (ballY > canvas.height) {
+                ballReset();
+            }
+
+            // Ball collides with paddle.
+            if (ballSpeedY > 0 && ballY > PADDLE_Y && 
+                ballY < PADDLE_Y + PADDLE_THICKNESS) {
+                if (ballX > paddleX &&
+                    ballX < paddleX + PADDLE_WIDTH) {
+                    var paddleCenter = paddleX + (PADDLE_WIDTH / 2);
+                    var delta = ballX - paddleCenter;
+                    ballSpeedX = delta * 0.25;
+                    ballSpeedY *= -1;
+                }
+            }
+
+            // Ball constant movement by speed.
+            ballX += ballSpeedX;
+            ballY += ballSpeedY;
+        }
+
+        function ballReset() {
+            ballX = canvas.width / 2;
+            ballY = canvas.height / 2;
+        }
+
+        function calculateMousePos(evt) {
+            var rect = canvas.getBoundingClientRect(), root = document.documentElement;
+
+            // Account for the margins, canvas position on page, scroll amount, etc...
+            var mouseX = evt.clientX - rect.left - root.scrollLeft;
+            var mouseY = evt.clientY - rect.top - root.scrollTop;
+
+            return {
+                x: mouseX,
+                y: mouseY
+            };
+        }
+    </script>
+</html>
