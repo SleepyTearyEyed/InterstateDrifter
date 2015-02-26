@@ -16,15 +16,112 @@
 
         var paddleX = 0;
 
+        var brickCounter = 0; // To keep track of bricks.
+
         const PADDLE_WIDTH = 100;
         const PADDLE_THICKNESS = 10;
         const PADDLE_Y = 540;
+
+        const BRICK_W = 80; // Brick collision width.
+        const BRICK_H = 20; // Brick collision height.
+        const BRICK_GAP = 2; // Visual gap between bricks.
+        const BRICK_COLS = 10; // Number of brick columns.
+        const BRICK_ROWS = 14; 
+
+        var brickGrid = new Array(BRICK_COLS * BRICK_ROWS);
+
+        function resetBricks() {
+            brickCounter = 0;
+
+            for (var i=0; i < BRICK_COLS * BRICK_ROWS; i++) {
+                if (i >= 30)
+                {
+                    brickGrid[i] = 1;
+                    brickCounter ++; // Add a brick to the counter for each brick in grid.
+                }
+                else
+                {
+                    brickGrid[i] = 0;
+                }
+            }
+        }
+
+        function brickTileToIndex(tileCol, tileRow) {
+            return (tileCol + BRICK_COLS * tileRow);
+        }
+
+        function isBrickAtTileCoord(brickTileCol, brickTileRow) {
+            var brickIndex = brickTileToIndex(brickTileCol, brickTileRow);
+            return (brickGrid[brickIndex] == 1);
+        }
+
+        function breakAndBounceOffBrickAtPixelCoord(pixelX, pixelY) {
+            var tileCol = pixelX / BRICK_W;
+            var tileRow = pixelY / BRICK_H;
+
+            tileCol = Math.floor(tileCol);
+            tileRow = Math.floor(tileRow);
+
+            // To aoid index out of bounds make sure it's within the brick wall.
+            if (tileCol < 0 || tileCol >= BRICK_COLS ||
+                tileRow < 0 || tileRow >= BRICK_ROWS) {
+                return;
+            }
+
+            var brickIndex = brickTileToIndex(tileCol, tileRow);
+
+            // Check if it's overlapping a visible brick.
+            if (brickGrid[brickIndex] == 1) {
+                // We need to compare to where the ball was the previous frame.
+                var prevBallX = ballX - ballSpeedX;
+                var prevBallY = ballY - ballSpeedY;
+                var prevTileCol = Math.floor(prevBallX / BRICK_W);
+                var prevTileRow = Math.floor(prevBallY / BRICK_H);
+
+                var bothTestsFailed = true;
+
+                // Came in horizontally.
+                if (prevTileCol != tileCol) {
+                    var adjacentBrickIndex = brickTileToIndex(prevTileCol, tileRow);
+
+                    // Make sure the side of brick hit isn't blocked by adjacent brick
+                    // before flipping it's horizontal motion.
+                    if (brickGrid[adjacentBrickIndex] != 1) {
+                        ballSpeedX *= -1;
+                        bothTestsFailed = false;
+                    }
+                }
+
+                // Came in vertically.
+                if (prevTileRow != tileRow) {
+                    var adjacentBrickIndex = brickTileToIndex(tileCol, prevTileRow);
+
+                    // Make sure the brick side isn't blocked by adjacent brick
+                    // before flipping it's vertical motion.
+                    if (brickGrid[adjacentBrickIndex] != 1) {
+                        ballSpeedY *= -1;
+                        bothTestsFailed = false;
+                    }
+                }
+
+                if (bothTestsFailed) {
+                    ballSpeedX *= -1;
+                    ballSpeedY *= -1;
+                }
+
+                brickGrid[brickIndex] = 0;
+                brickCounter --;
+            }
+        }
 
         window.onload = function() {            
             // Save the canvas for dimensions and its 2d context for drawing to it.
             canvas = document.getElementById('gameCanvas');
             canvasContext = canvas.getContext('2d');
             paddleX = (canvas.width / 2) - (PADDLE_WIDTH/2);
+
+            ballReset();
+            resetBricks();
 
             var framesPerSecond = 30;
 
@@ -43,14 +140,37 @@
                     var mousePos = calculateMousePos(evt);
                     paddleX = mousePos.x - (PADDLE_WIDTH/2);
 
+                    //ballX = mousePos.x;
+                    //ballY = mousePos.y;
                 });
         }
 
         function drawEverything() {
+            // Black out the screen before drawing everything.
             colorRect(0, 0, canvas.width, canvas.height, 'black');
-            colorCircle(ballX, ballY, 5, 'white');
 
+            drawBricks();
+
+            // Draw the ball.
+            colorCircle(ballX, ballY, 6, 'white');
+
+            // Draw the paddle.
             colorRect(paddleX, PADDLE_Y, PADDLE_WIDTH, PADDLE_THICKNESS, 'white');
+        }
+
+        function drawBricks() {
+            for (var row = 0; row < BRICK_ROWS; row++) {
+                for (var column = 0; column < BRICK_COLS; column ++) {
+
+                    if (isBrickAtTileCoord(column, row)) {
+                        var brickTopLeftX = column * BRICK_W;
+                        var brickTopLeftY = row * BRICK_H;
+                    
+                        colorRect(brickTopLeftX, brickTopLeftY, BRICK_W - BRICK_GAP, BRICK_H - BRICK_GAP, 'blue');
+                    }
+                }
+            }
+
         }
 
         function colorRect(topLeftX, topLeftY, boxWidth, boxHeight, fillColor) {
@@ -88,16 +208,24 @@
             }
 
             // Ball collides with paddle.
-            if (ballSpeedY > 0 && ballY > PADDLE_Y && 
-                ballY < PADDLE_Y + PADDLE_THICKNESS) {
-                if (ballX > paddleX &&
-                    ballX < paddleX + PADDLE_WIDTH) {
-                    var paddleCenter = paddleX + (PADDLE_WIDTH / 2);
-                    var delta = ballX - paddleCenter;
-                    ballSpeedX = delta * 0.25;
-                    ballSpeedY *= -1;
+            if (ballSpeedY > 0) { // Ball should be moving down before any paddle collision happens.
+                if (ballY >= PADDLE_Y &&  // Top of paddle.
+                    ballY <= PADDLE_Y + PADDLE_THICKNESS) { // Bottom of paddle.
+
+                    if (brickCounter <= 0) {
+                        resetBricks();
+                    }
+                    if (ballX > paddleX && // To the right of left side of paddle.
+                        ballX < paddleX + PADDLE_WIDTH) { // To the left of right side of paddle.
+                        var paddleCenter = paddleX + (PADDLE_WIDTH / 2);
+                        var delta = ballX - paddleCenter;
+                        ballSpeedX = delta * 0.25;
+                        ballSpeedY *= -1;
+                    }
                 }
             }
+
+            breakAndBounceOffBrickAtPixelCoord(ballX, ballY);
 
             // Ball constant movement by speed.
             ballX += ballSpeedX;
