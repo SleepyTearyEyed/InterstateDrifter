@@ -33,4 +33,5 @@ function drawEverything() {
 
 function moveEverything() {
     p1.carMove();
+    updateTrack();
 }
