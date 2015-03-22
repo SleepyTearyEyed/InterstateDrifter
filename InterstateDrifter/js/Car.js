@@ -1,10 +1,20 @@
+const STRAFE_MAX_SPEED = 6;
+const STRAFE_MIN_SPEED = 0;
 const STRAFE_SPEED = 6;
-const STRAFE_PIVOT_AMT = 0.08;
+const STRAFE_PIVOT_AMT = 0.20;
+
+const CAR_MAX_SPEED = 13;
+const CAR_MIN_SPEED = 0;
+const CAR_GAS_SPEED = 0.18;
+const CAR_BRAKE_SPEED = 0.22;
+
+const CAR_MIN_Y = 400;
 
 function carClass() {
     this.carX = 75;
     this.carY = 75;
     this.carSpeed = 0;
+    this.carTurnSpeed = 0;
     this.carOdom = 0;
     this.carAng =  -.5 * Math.PI;
 
@@ -54,41 +64,55 @@ function carClass() {
 
     this.carMove = function() {
         var nextX = this.carX;
+        var nextY = this.carY;
 
-        // Increase or decrease car's speed when up or down arrow is pushed.
-        if (this.keyHeld_Gas) {
-            this.carSpeed += 0.1;
-        } else if (this.keyHeld_Brake) {
-            this.carSpeed -= 0.1;
+        var carYRange = this.homeY - CAR_MIN_Y;
+        var carSpeedRange = CAR_MAX_SPEED - CAR_MIN_SPEED;
+
+        nextY = this.homeY - carYRange * (this.carSpeed / carSpeedRange);
+
+        this.carOdom += this.carSpeed * TRACK_H / 30; //  * 0.2
+
+        var wallBounds = getTrackBoundriesAt(this.carY);
+        var wallXLeft = wallBounds.leftSide * TRACK_W;
+        var wallXRight = wallBounds.rightSide * TRACK_W;
+        var carXRange = TRACK_COLS - (wallXLeft + wallXRight);
+    
+        if (this.carSpeed > CAR_MIN_SPEED) {
+            if (this.keyHeld_TurnLeft) {
+                nextX -= STRAFE_SPEED;
+                this.carAng = -(.5 + STRAFE_PIVOT_AMT) * Math.PI
+            } else if (this.keyHeld_TurnRight) {
+                nextX += STRAFE_SPEED;
+                this.carAng = -(.5 - STRAFE_PIVOT_AMT) * Math.PI;
+            } else {
+                this.carAng = -.5 * Math.PI;
+            }
         }
 
-        if (this.carSpeed > 10) {
-            this.carSpeed = 10;
-        } else if (this.carSpeed < 0) {
-            this.carSpeed = 0;
-        }
-
-        this.carOdom += this.carSpeed * TRACK_H / 30;
-        
-        if (this.keyHeld_TurnLeft) {
-            nextX -= STRAFE_SPEED;
-            this.carAng = -(.5 + STRAFE_PIVOT_AMT) * Math.PI
-        } else if (this.keyHeld_TurnRight) {
-            nextX += STRAFE_SPEED;
-            this.carAng = -(.5 - STRAFE_PIVOT_AMT) * Math.PI;
-        } else {
-            this.carAng = -.5 * Math.PI;
-        }
-
-        var drivingIntoTileType = getTrackAtPixelCoord(nextX, this.carY);
+        var drivingIntoTileType = getTrackAtPixelCoord(nextX, nextY + TRACK_H - this.carOdom);
 
         if (drivingIntoTileType == TRACK_ROAD)
         {
+            // Increase or decrease car's speed when up or down arrow is pushed.
+            if (this.keyHeld_Gas) {
+                this.carSpeed += CAR_GAS_SPEED;
+            } else if (this.keyHeld_Brake) {
+                this.carSpeed -= CAR_BRAKE_SPEED;
+            }
+
+            if (this.carSpeed > CAR_MAX_SPEED) {
+                this.carSpeed = CAR_MAX_SPEED;
+            } else if (this.carSpeed < CAR_MIN_SPEED) {
+                this.carSpeed = CAR_MIN_SPEED;
+            }
+
             this.carX = nextX;
+            this.carY = nextY;
         } else {
-            var wallBounds = getTrackBoundriesAt(this.carY);
+            /*var wallBounds = getTrackBoundriesAt(this.carY);
             var wallXLeft = wallBounds.leftSide * TRACK_W;
-            var wallXRight = wallBounds.rightSide * TRACK_W;
+            var wallXRight = wallBounds.rightSide * TRACK_W;*/
             
             if (this.carX < wallXLeft) {
                 this.carX = wallXLeft;

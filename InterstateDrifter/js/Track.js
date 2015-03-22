@@ -34,7 +34,7 @@ const TRACK_ROAD_SLOPE_MIN = 0.2;
 const TRACK_ROAD_SLOPE_MAX = 1.4;
 const FRAMES_TILL_ROAD_SLOPE_CHANGE_MIN = 30;
 const FRAMES_TILL_ROAD_SLOPE_CHANGE_MAX = 60;
-const TRACK_PERC_ANGLED_ROADS = 0.70;
+const TRACK_PERC_ANGLED_ROADS = 0.99;
 var roadCenterColumn = 6;
 var roadXDelta = 0;
 var framesTillRoadChange = 0;
@@ -97,7 +97,11 @@ function getNextTrack() {
     var firstRoadCol = Math.floor(roadCenterColumn - (roadWidth / 2));
 
     for(var i = 0; i < firstRoadCol; i++) {
-        nextTrack.push(TRACK_WALL);
+        if (Math.random() < 0.1) {
+            nextTrack.push(TRACK_TREE);
+        } else {
+            nextTrack.push(TRACK_WALL);
+        }
     }
 
     for(var i = 0; i < roadWidth; i++) {
@@ -106,7 +110,11 @@ function getNextTrack() {
     }
 
     while (nextTrack.length < TRACK_COLS) {
-        nextTrack.push(TRACK_WALL);
+        if (Math.random() < 0.1) {
+            nextTrack.push(TRACK_TREE);
+        } else {
+            nextTrack.push(TRACK_WALL);
+        }
     }
 
     for(var i = 0; i < TRACK_WALL_MARGIN; i++) {
