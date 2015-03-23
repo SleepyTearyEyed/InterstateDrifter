@@ -17,6 +17,7 @@ function carClass() {
     this.carTurnSpeed = 0;
     this.carOdom = 0;
     this.carAng =  -.5 * Math.PI;
+    this.carSteering = 0.0;
 
     this.keyHeld_TurnLeft = false;
     this.keyHeld_TurnRight = false;
@@ -69,7 +70,8 @@ function carClass() {
         var carYRange = this.homeY - CAR_MIN_Y;
         var carSpeedRange = CAR_MAX_SPEED - CAR_MIN_SPEED;
 
-        nextY = this.homeY - carYRange * (this.carSpeed / carSpeedRange);
+        var carSpeedPerc = this.carSpeed / carSpeedRange;
+        nextY = this.homeY - carYRange * carSpeedPerc;
 
         this.carOdom += this.carSpeed * TRACK_H / 30; //  * 0.2
 
@@ -78,17 +80,28 @@ function carClass() {
         var wallXRight = wallBounds.rightSide * TRACK_W;
         var carXRange = TRACK_COLS - (wallXLeft + wallXRight);
     
-        if (this.carSpeed > CAR_MIN_SPEED) {
-            if (this.keyHeld_TurnLeft) {
-                nextX -= STRAFE_SPEED;
-                this.carAng = -(.5 + STRAFE_PIVOT_AMT) * Math.PI
-            } else if (this.keyHeld_TurnRight) {
-                nextX += STRAFE_SPEED;
-                this.carAng = -(.5 - STRAFE_PIVOT_AMT) * Math.PI;
-            } else {
-                this.carAng = -.5 * Math.PI;
-            }
+        var steerToward = 0.0;
+
+        if (this.keyHeld_TurnLeft) {
+            steerToward = -1.0;
+
+        } else if (this.keyHeld_TurnRight) {
+            steerToward = 1.0;
+        } 
+
+        steerToward *= carSpeedPerc * 3.0;
+
+        if (steerToward > 1.0) {
+            steerToward = 1.0;
+        } else if (steerToward < -1.0) {
+            steerToward = -1.0;
         }
+
+        var kValue = 0.80;
+        this.carSteering = kValue * this.carSteering + (1.0-kValue) * steerToward;
+
+        this.carAng = (-0.5 + STRAFE_PIVOT_AMT * this.carSteering) * Math.PI;
+        nextX +=  STRAFE_SPEED * this.carSteering;
 
         var drivingIntoTileType = getTrackAtPixelCoord(nextX, nextY + TRACK_H - this.carOdom);
 
