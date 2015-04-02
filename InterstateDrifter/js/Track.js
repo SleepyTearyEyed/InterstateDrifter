@@ -1,37 +1,14 @@
 const TRACK_W = 40; // Track collision width.
 const TRACK_H = 40; // Track collision height.
 const TRACK_COLS = 20; // Number of track columns.
-const TRACK_ROWS = 16;
+const TRACK_ROWS = 17;
 const TRACK_WALL_MARGIN = 1;
 
-var trackGrid = 
-[1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,
- 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,
- 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,
- 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,
- 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,
- 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,
- 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,
- 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,
- 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,
- 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,
- 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,
- 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,
- 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,
- 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,
- 1, 1, 1, 1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,
- 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1];
-
-const TRACK_ROAD = 0;
-const TRACK_WALL = 1;
-const TRACK_PLAYER = 2;
-const TRACK_GOAL = 3;
-const TRACK_TREE = 4;
-const TRACK_FLAG = 5;
+var trackVector = [];
 
 // Road slope
 const TRACK_ROAD_SLOPE_MIN = 0.2;
-const TRACK_ROAD_SLOPE_MAX = 1.4;
+const TRACK_ROAD_SLOPE_MAX = 0.4;
 const FRAMES_TILL_ROAD_SLOPE_CHANGE_MIN = 30;
 const FRAMES_TILL_ROAD_SLOPE_CHANGE_MAX = 60;
 const TRACK_PERC_ANGLED_ROADS = 0.99;
@@ -51,120 +28,79 @@ var roadWidth = 8;
 var roadWidthDelta = 0;
 var framesTillRoadWidthChange = 0;
 
+// UI
+const UI_TILE_THICKNESS = 4;
+
+function initTrack() {
+    for (var i = 0; i < TRACK_ROWS; i++) {
+        trackVector.push({colCenter: 9, roadSize: 12});
+    }
+
+    for (var i = 0; i < TRACK_ROWS; i++) {
+        addToTrackAtTop();
+    }
+
+    p1.carOdom = 0;
+
+    var carRow = Math.floor(p1.carY / TRACK_H);// based carY and some track constants
+    var carColTile = trackVector[carRow + 1].colCenter; // figure out which column its in by colcenter from trackvector[row]
+    var carNewX = carColTile * TRACK_W; // figure out pixel position from the col tile and track constants.
+
+    p1.carX = carNewX;
+}
+
 function trackTileToIndex(tileCol, tileRow) {
     return (tileCol + TRACK_COLS * tileRow);
 }
 
-function isWallAtTileCoord(trackTileCol, trackTileRow) {
-    var trackIndex = trackTileToIndex(trackTileCol, trackTileRow);
-    return (trackGrid[trackIndex] == TRACK_WALL);
-}
-
-function getTrackAtPixelCoord(pixelX, pixelY) {
-    var tileCol = pixelX / TRACK_W;
-    var tileRow = pixelY / TRACK_H;
-
-    tileCol = Math.floor(tileCol);
-    tileRow = Math.floor(tileRow);
-
-    // To avoid index out of bounds make sure it's within the track wall.
-    if (tileCol < 0 || tileCol >= TRACK_COLS ||
-        tileRow < 0 || tileRow >= TRACK_ROWS) {
-        return TRACK_WALL;
-    }
-
-    var trackIndex = trackTileToIndex(tileCol, tileRow);
-
-    return (trackGrid[trackIndex]);
-}
-
 function addToTrackAtTop() {
-    trackGrid.splice(-TRACK_COLS, TRACK_COLS);
+    trackVector.splice(-1, 1);
+    trackVector.unshift({colCenter: roadCenterColumn, roadSize: roadWidth});
 
-    var nextTrack = getNextTrack();
-
-    for (var i = 0; i < TRACK_COLS; i++) {
-        trackGrid.unshift(nextTrack.pop());
-    }
-    
+    nextTrack();
+  
     p1.carOdom -= TRACK_H;
 }
 
-function getNextTrack() {
-    //var nextTrack = [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1];
-    var nextTrack = [];
-
-    var firstRoadCol = Math.floor(roadCenterColumn - (roadWidth / 2));
-
-    for(var i = 0; i < firstRoadCol; i++) {
-        if (Math.random() < 0.1) {
-            nextTrack.push(TRACK_TREE);
-        } else {
-            nextTrack.push(TRACK_WALL);
-        }
-    }
-
-    for(var i = 0; i < roadWidth; i++) {
-        nextTrack.push(TRACK_ROAD);
-
-    }
-
-    while (nextTrack.length < TRACK_COLS) {
-        if (Math.random() < 0.1) {
-            nextTrack.push(TRACK_TREE);
-        } else {
-            nextTrack.push(TRACK_WALL);
-        }
-    }
-
-    for(var i = 0; i < TRACK_WALL_MARGIN; i++) {
-        nextTrack.pop();
-        nextTrack.shift();
-    }
-
-    for(var i = 0; i < TRACK_WALL_MARGIN; i++) {
-        nextTrack.push(TRACK_WALL);
-        nextTrack.unshift(TRACK_WALL);
-    }
-
+function nextTrack() {
     handleRoadSlope();
 
     handleRoadThickness();
 
     fixRoad();
-
-    return nextTrack;
 }
 
 function getTrackBoundriesAt(carY) {
-    var tileRow = carY / TRACK_H;
+    var tileRow = (carY + .5 * TRACK_H) / TRACK_H;
 
-    tileRow = Math.floor(tileRow);
+    tileRow = Math.floor(tileRow) + 1; // move down one row
 
     // To avoid index out of bounds make sure it's within the track wall.
     if (tileRow < 0 || tileRow >= TRACK_ROWS) {
-        return {leftSide: 0, rightSide: TRACK_COLS};
+        return {leftSidePixels: 0, rightSidePixels: TRACK_COLS};
     }
 
-    var leftReturn = -1;
-    var rightReturn = -1;
+    var leftWallCurrentRow = trackVector[tileRow].colCenter - 
+                             trackVector[tileRow].roadSize / 2;
+    var rightWallCurrentRow = trackVector[tileRow].colCenter + 
+                              trackVector[tileRow].roadSize / 2;
 
-    for (var column = 0; column < TRACK_COLS; column ++) {
-        var trackIndex = trackTileToIndex(column, tileRow);
-        var trackType = trackGrid[trackIndex];
+    var tileNextRow = tileRow - 1;                       
+    var leftWallNextRow = trackVector[tileNextRow].colCenter - 
+                             trackVector[tileNextRow].roadSize / 2;
+    var rightWallNextRow = trackVector[tileNextRow].colCenter + 
+                              trackVector[tileNextRow].roadSize / 2;
 
-        if (leftReturn != -1) {
-            if (trackType == TRACK_WALL) {
-                rightReturn = column;
-                console.log(rightReturn);
-                break;
-            }
-        } else if (trackType == TRACK_ROAD) {
-            leftReturn = column;
-        }
-    }
+    var interpPerc = p1.carOdom / TRACK_H;
 
-    return {leftSide: leftReturn, rightSide: rightReturn};
+    var leftReturn = leftWallNextRow * interpPerc +
+                     leftWallCurrentRow * (1.0 - interpPerc);
+    var rightReturn = rightWallNextRow * interpPerc +
+                      rightWallCurrentRow * (1.0 - interpPerc);
+    leftReturn *= TRACK_W;
+    rightReturn *= TRACK_W;
+
+    return {leftSidePixels: leftReturn, rightSidePixels: rightReturn};
 }
 
 function getRandRange(min, max) {
@@ -222,16 +158,17 @@ function fixRoad() {
     var tooFarLeft = TRACK_WALL_MARGIN + (roadWidth / 2);
 
     if (roadCenterColumn < tooFarLeft) {
+
         roadCenterColumn = tooFarLeft;
-        framesTillRoadChange = -1;
 
     }
 
-    var tooFarRight = TRACK_COLS - tooFarLeft;
+    var tooFarRight = TRACK_COLS - tooFarLeft - UI_TILE_THICKNESS;
 
     if (roadCenterColumn > tooFarRight) {
+
         roadCenterColumn = tooFarRight;
-        framesTillRoadChange = -1;
+
     }
 }
 
@@ -244,19 +181,67 @@ function updateTrack() {
 function drawTrack() {
     var trackIndex = 0;
     var segmentTopLeftX = 0;
-
     var segmentTopLeftY = p1.carOdom - TRACK_H;
+    canvasContext.strokeStyle="white";
 
-    for (var row = 0; row < TRACK_ROWS; row++) {
-        for (var column = 0; column < TRACK_COLS; column ++) {
+    segmentTopLeftY = p1.carOdom - TRACK_H;
 
-            var trackType = trackGrid[trackIndex];
+    colorRect(0, 0, canvas.width, canvas.height, "black");
+    // Area left of left road.
+    for (var row = 0; row < trackVector.length; row++) {
+        var leftSideTile = trackVector[row].colCenter - trackVector[row].roadSize/2;
+        var leftSidePixelX = TRACK_W * leftSideTile;
+        var pixelY = segmentTopLeftY + TRACK_H * row;
 
-            canvasContext.drawImage(trackPic[trackType], segmentTopLeftX, segmentTopLeftY);
-            segmentTopLeftX += TRACK_W;
-            trackIndex++;
-        } // End of column for
-        segmentTopLeftX = 0;
-        segmentTopLeftY += TRACK_H;
-    } // End of row for
+        canvasContext.beginPath();
+        canvasContext.moveTo(0, pixelY);
+        canvasContext.lineTo(leftSidePixelX,pixelY);
+        canvasContext.stroke();
+    }
+
+    // Area right of right road.
+    for (var row = 0; row < trackVector.length; row++) {
+        var leftSideTile = trackVector[row].colCenter - trackVector[row].roadSize/2;
+        var leftSidePixelX = TRACK_W * leftSideTile;
+        var rightSidePixelX = leftSidePixelX + TRACK_W * trackVector[row].roadSize;
+        var pixelY = segmentTopLeftY + TRACK_H * row;
+
+        canvasContext.beginPath();
+        canvasContext.moveTo(canvas.width - UI_TILE_THICKNESS * TRACK_W, pixelY);
+        canvasContext.lineTo(rightSidePixelX,pixelY);
+        canvasContext.stroke();
+    }
+
+    canvasContext.beginPath();
+    canvasContext.moveTo(canvas.width - UI_TILE_THICKNESS * TRACK_W, 0);
+    canvasContext.lineTo(canvas.width - UI_TILE_THICKNESS * TRACK_W, canvas.height);
+    canvasContext.stroke();
+
+    // Fix this edge case, of top most and bottom most track lines.
+    canvasContext.beginPath();
+    canvasContext.moveTo(0, 0);
+    for (var row = 0; row < trackVector.length; row++) {
+        var leftSideTile = trackVector[row].colCenter - trackVector[row].roadSize/2;
+        var leftSidePixelX = TRACK_W * leftSideTile;
+        var pixelY = segmentTopLeftY + TRACK_H * row;
+
+
+        canvasContext.lineTo(leftSidePixelX,pixelY);
+
+    }
+    canvasContext.strokeStyle="yellow";
+    canvasContext.stroke();
+
+    canvasContext.beginPath();
+    canvasContext.moveTo(0, 0);
+    for (var row = 0; row < trackVector.length; row++) {
+        var rightSideTile = trackVector[row].colCenter + trackVector[row].roadSize/2;
+        var rightSidePixelX = TRACK_W * rightSideTile;
+        var pixelY = segmentTopLeftY + TRACK_H * row;
+
+
+        canvasContext.lineTo(rightSidePixelX,pixelY);
+    }
+    canvasContext.strokeStyle="green";
+    canvasContext.stroke();
 } // End of func

@@ -18,12 +18,7 @@ function loadImageForTrackCode(trackCode, fileName) {
 
 function loadImages() {
     var imgList = [
-    {varName: carPic, theFile: "player1.png"},
-    {trackType: TRACK_ROAD, theFile: "track_road.png"},
-    {trackType: TRACK_WALL, theFile: "track_wall.png"},
-    {trackType: TRACK_GOAL, theFile: "track_goal.png"},
-    {trackType: TRACK_TREE, theFile: "track_treeWall.png"},
-    {trackType: TRACK_FLAG, theFile: "track_flagWall.png"}];
+    {varName: carPic, theFile: "player1.png"}];
 
     picsToLoad = imgList.length;
 

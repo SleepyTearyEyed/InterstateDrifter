@@ -7,8 +7,10 @@ const CAR_MAX_SPEED = 13;
 const CAR_MIN_SPEED = 0;
 const CAR_GAS_SPEED = 0.18;
 const CAR_BRAKE_SPEED = 0.22;
+const CAR_HIT_WALL_SPEED = 0.85;
 
 const CAR_MIN_Y = 400;
+const CAR_EDGE_MARGIN = 50;
 
 function carClass() {
     this.carX = 75;
@@ -18,6 +20,8 @@ function carClass() {
     this.carOdom = 0;
     this.carAng =  -.5 * Math.PI;
     this.carSteering = 0.0;
+    this.sensorLeft = 0;
+    this.sensorRight = 0;
 
     this.keyHeld_TurnLeft = false;
     this.keyHeld_TurnRight = false;
@@ -39,24 +43,29 @@ function carClass() {
 
     this.drawCar = function() {
         drawBitmapCenteredAtLocationWithRotation(this.myBitmap, this.carX, this.carY, this.carAng);
+        //colorCircle(this.sensorRight, this.carY, 5, "white");
+        //colorCircle(this.sensorLeft, this.carY, 5, "white");
+    }
+
+    this.drawCarUI = function() {
+        var speedometerX = canvas.width - (UI_TILE_THICKNESS / 2) * TRACK_W;
+        var speedometerY = canvas.height - TRACK_H;
+
+        var carSpeedRange = CAR_MAX_SPEED - CAR_MIN_SPEED;
+        var carSpeedPerc = this.carSpeed / carSpeedRange;
+        var needleLength = TRACK_W * 0.75;
+        var needleAng = carSpeedPerc * Math.PI + Math.PI;
+        var needleEndX = Math.cos(needleAng) * needleLength + speedometerX;
+        var needleEndY = Math.sin(needleAng) * needleLength + speedometerY;
+
+        colorLine(speedometerX, speedometerY, needleEndX, needleEndY, "white");
     }
 
     this.carReset = function() {
         this.carAng = -0.5 * Math.PI;
         if (this.homeX == undefined) {
-            for (var i = 0; i < trackGrid.length; i ++)
-            {
-                if (trackGrid[i] == TRACK_PLAYER) {
-                    trackGrid[i] = TRACK_ROAD;
-
-                    var tileCol =  i % TRACK_COLS;
-                    var tileRow = Math.floor(i / TRACK_COLS);
-                    this.homeX = tileCol * TRACK_W + (TRACK_W / 2);
-                    this.homeY = tileRow * TRACK_H + (TRACK_H / 2);
-
-                    break;
-                }
-            }
+            this.homeX = canvas.width / 2;
+            this.homeY = canvas.height - CAR_EDGE_MARGIN;
         }
 
         this.carX = this.homeX;
@@ -76,8 +85,10 @@ function carClass() {
         this.carOdom += this.carSpeed * TRACK_H / 30; //  * 0.2
 
         var wallBounds = getTrackBoundriesAt(this.carY);
-        var wallXLeft = wallBounds.leftSide * TRACK_W;
-        var wallXRight = wallBounds.rightSide * TRACK_W;
+        var wallXLeft = wallBounds.leftSidePixels;
+        var wallXRight = wallBounds.rightSidePixels;
+        this.sensorLeft = wallXLeft;
+        this.sensorRight = wallXRight;
         var carXRange = TRACK_COLS - (wallXLeft + wallXRight);
     
         var steerToward = 0.0;
@@ -87,10 +98,16 @@ function carClass() {
 
         } else if (this.keyHeld_TurnRight) {
             steerToward = 1.0;
-        } 
+        }
 
-        steerToward *= carSpeedPerc * 3.0;
+        var minTurnAbility = 0.05;
 
+        if (carSpeedPerc < minTurnAbility) {
+            steerToward *= minTurnAbility * 3.0;
+        } else {
+            steerToward *= carSpeedPerc * 3.0;
+        }
+        
         if (steerToward > 1.0) {
             steerToward = 1.0;
         } else if (steerToward < -1.0) {
@@ -102,10 +119,9 @@ function carClass() {
 
         this.carAng = (-0.5 + STRAFE_PIVOT_AMT * this.carSteering) * Math.PI;
         nextX +=  STRAFE_SPEED * this.carSteering;
+        this.carY = nextY;
 
-        var drivingIntoTileType = getTrackAtPixelCoord(nextX, nextY + TRACK_H - this.carOdom);
-
-        if (drivingIntoTileType == TRACK_ROAD)
+        if (nextX > wallXLeft && nextX< wallXRight)
         {
             // Increase or decrease car's speed when up or down arrow is pushed.
             if (this.keyHeld_Gas) {
@@ -121,12 +137,8 @@ function carClass() {
             }
 
             this.carX = nextX;
-            this.carY = nextY;
         } else {
-            /*var wallBounds = getTrackBoundriesAt(this.carY);
-            var wallXLeft = wallBounds.leftSide * TRACK_W;
-            var wallXRight = wallBounds.rightSide * TRACK_W;*/
-            
+            this.carSpeed *= CAR_HIT_WALL_SPEED;
             if (this.carX < wallXLeft) {
                 this.carX = wallXLeft;
             } else if (this.carX > wallXRight) {
