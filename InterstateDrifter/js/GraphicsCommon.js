@@ -26,11 +26,9 @@ function colorCircle(centerX, centerY, radius, fillColor) {
 
 // All the above is for vector graphics this function is used for drawing pixel graphics.
 function drawBitmapCenteredAtLocationWithRotation(graphic, atX, atY, withAngle) {
-
     canvasContext.save();
     canvasContext.translate(atX, atY);
     canvasContext.rotate(withAngle);
     canvasContext.drawImage(graphic, -carPic.width / 2, -carPic.height / 2);
     canvasContext.restore();
-
 }
