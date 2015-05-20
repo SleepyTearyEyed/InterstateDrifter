@@ -41,7 +41,9 @@ function initTrack() {
     }
 
     p1.carOdom = 0;
+}
 
+function trackCenterCar () {
     var carRow = Math.floor(p1.carY / TRACK_H);// based carY and some track constants
     var carColTile = trackVector[carRow + 1].colCenter; // figure out which column its in by colcenter from trackvector[row]
     var carNewX = carColTile * TRACK_W; // figure out pixel position from the col tile and track constants.
@@ -219,10 +221,13 @@ function drawTrack() {
 
     // Fix this edge case, of top most and bottom most track lines.
     canvasContext.beginPath();
-    canvasContext.moveTo(0, 0);
+    var leftSideTile = trackVector[0].colCenter - trackVector[0].roadSize/2;
+    var leftSidePixelX = TRACK_W * leftSideTile;
+
+    canvasContext.moveTo(leftSidePixelX, 0);
     for (var row = 0; row < trackVector.length; row++) {
-        var leftSideTile = trackVector[row].colCenter - trackVector[row].roadSize/2;
-        var leftSidePixelX = TRACK_W * leftSideTile;
+        leftSideTile = trackVector[row].colCenter - trackVector[row].roadSize/2;
+        leftSidePixelX = TRACK_W * leftSideTile;
         var pixelY = segmentTopLeftY + TRACK_H * row;
 
 
@@ -233,10 +238,12 @@ function drawTrack() {
     canvasContext.stroke();
 
     canvasContext.beginPath();
-    canvasContext.moveTo(0, 0);
+    var rightSideTile = trackVector[0].colCenter + trackVector[0].roadSize/2;
+    var rightSidePixelX = TRACK_W * rightSideTile;
+    canvasContext.moveTo(rightSidePixelX, 0);
     for (var row = 0; row < trackVector.length; row++) {
-        var rightSideTile = trackVector[row].colCenter + trackVector[row].roadSize/2;
-        var rightSidePixelX = TRACK_W * rightSideTile;
+        rightSideTile = trackVector[row].colCenter + trackVector[row].roadSize/2;
+        rightSidePixelX = TRACK_W * rightSideTile;
         var pixelY = segmentTopLeftY + TRACK_H * row;
 
 

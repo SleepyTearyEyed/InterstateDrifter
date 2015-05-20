@@ -5,9 +5,11 @@ const STRAFE_PIVOT_AMT = 0.20;
 
 const CAR_MAX_SPEED = 13;
 const CAR_MIN_SPEED = 0;
-const CAR_GAS_SPEED = 0.18;
-const CAR_BRAKE_SPEED = 0.22;
+const CAR_GAS_SPEED = 0.21;
+const CAR_BRAKE_SPEED = 0.3;
 const CAR_HIT_WALL_SPEED = 0.95;
+const CAR_ROLL_TO_STOP = 0.981;
+const CAR_ROLL_TO_STOP_WHILE_TURN = 0.975;
 
 const CAR_MIN_Y = 400;
 const CAR_EDGE_MARGIN = 50;
@@ -39,6 +41,7 @@ function carClass() {
     this.needleWobbleOsc2 = 0;
     this.carTurnSpeed = 0;
     this.carOdom = 0;
+    this.currentCarMoveDelta = 0;
     this.carAng =  -.5 * Math.PI;
     this.carSteering = 0.0;
     this.sensorLeft = 0;
@@ -56,13 +59,12 @@ function carClass() {
         this.controlKeyForBrake = downKey;
     }
 
-    this.initCar = function(whichGraphic, whichName) {
-        this.myBitmap = whichGraphic;
+    this.initCar = function(whichName) {
         this.myName = whichName;
         this.carReset();
         this.mirrorVector();
         this.setupVectorDim();
-
+        trackCenterCar();
     }
 
     this.mirrorVector = function() {
@@ -115,8 +117,6 @@ function carClass() {
     }
 
     this.drawCar = function() {
-        //drawBitmapCenteredAtLocationWithRotation(this.myBitmap, this.carX, this.carY, this.carAng);
-
         canvasContext.save();
         canvasContext.translate(this.carX, this.carY);
         canvasContext.rotate(this.carAng);
@@ -131,18 +131,15 @@ function carClass() {
         canvasContext.strokeStyle = "white";
         canvasContext.stroke();
         canvasContext.restore();
-
-        //colorCircle(this.sensorRight, this.carY, 5, "white");
-        //colorCircle(this.sensorLeft, this.carY, 5, "white");
     }
 
-    this.drawAngSeg = function(fromX, fromY, ang, dist1, dist2, color) {
+    this.drawAngSeg = function(fromX, fromY, ang, dist1, dist2, color, width) {
         var startX = Math.cos(ang) * dist1 + fromX;
         var startY = Math.sin(ang) * dist1 + fromY;
         var endX = Math.cos(ang) * dist2 + fromX;
         var endY = Math.sin(ang) * dist2 + fromY;
 
-        colorLine(startX, startY, endX, endY, color);
+        colorLine(startX, startY, endX, endY, color, width);
     }
 
     this.drawCarUI = function() {
@@ -167,14 +164,20 @@ function carClass() {
         var needleEndX = Math.cos(needleAng) * needleLength + speedometerX;
         var needleEndY = Math.sin(needleAng) * needleLength + speedometerY;
 
-        var radsBetweenLines = 30 * (Math.PI/180);
+        var radsBetweenLines = 7.5 * (Math.PI/180);
+
+        for (var r = Math.PI - (30 * (Math.PI/180)); r < Math.PI * 2 + (30 * (Math.PI/180)); r+=radsBetweenLines) {
+            this.drawAngSeg(speedometerX, speedometerY, r, needleLength, needleLength * 1.1, "white", 1);
+        }
+
+        radsBetweenLines = 30 * (Math.PI/180);
         for (var r = Math.PI; r < Math.PI * 2 + .1; r+=radsBetweenLines) {
-            this.drawAngSeg(speedometerX, speedometerY, r, needleLength * 0.95, needleLength * 1.05, "white");
+            this.drawAngSeg(speedometerX, speedometerY, r, needleLength * 0.9, needleLength * 1.2, "white", 2);
         }
 
         // Speedometer needle.
-        colorLine(speedometerX, speedometerY, needleEndX, needleEndY, "red");
-        this.drawAngSeg(speedometerX, speedometerY, needleAng, needleLength * 0.75, needleLength, "yellow");
+        colorLine(speedometerX, speedometerY, needleEndX, needleEndY, "red", 1);
+        this.drawAngSeg(speedometerX, speedometerY, needleAng, needleLength * 0.75, needleLength, "gold", 1);
 
         // Speedometer needle origin circle.
         colorCircle(speedometerX, speedometerY, needleLength * 0.05, "white");
@@ -184,6 +187,13 @@ function carClass() {
         canvasContext.arc(speedometerX, speedometerY, needleLength * 1.20, 30 * (Math.PI/180), Math.PI - (30 * (Math.PI/180)), true);
         canvasContext.strokeStyle = "white";
         canvasContext.stroke();
+
+        // Speed text
+        var speedOutput = this.needleSpeed * 15.0;
+        speedOutput = speedOutput.toFixed(1) + " mph";
+        canvasContext.fillStyle = "white";
+        canvasContext.textAlign = "right";
+        canvasContext.fillText(speedOutput, speedometerX + needleLength * 0.75, speedometerY + 25);
     }
 
     this.carReset = function() {
@@ -207,7 +217,8 @@ function carClass() {
         var carSpeedPerc = this.carSpeed / carSpeedRange;
         nextY = this.homeY - carYRange * carSpeedPerc;
 
-        this.carOdom += this.carSpeed * TRACK_H / 30; //  * 0.2
+        this.currentCarMoveDelta = this.carSpeed * TRACK_H / 30;
+        this.carOdom += this.currentCarMoveDelta; //  * 0.2
 
         var wallBounds = getTrackBoundriesAt(this.carY);
         var wallXLeft = wallBounds.leftSidePixels;
@@ -253,6 +264,12 @@ function carClass() {
                 this.carSpeed += CAR_GAS_SPEED;
             } else if (this.keyHeld_Brake) {
                 this.carSpeed -= CAR_BRAKE_SPEED;
+            }
+
+            if (this.keyHeld_TurnLeft || this.keyHeld_TurnRight) {
+                this.carSpeed *= CAR_ROLL_TO_STOP_WHILE_TURN;
+            } else {
+                this.carSpeed *= CAR_ROLL_TO_STOP;
             }
 
             if (this.carSpeed > CAR_MAX_SPEED) {

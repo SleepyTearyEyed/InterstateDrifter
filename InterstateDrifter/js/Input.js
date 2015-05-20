@@ -33,7 +33,7 @@ function keyPressed(evt) {
     setKeyHoldState(evt.keyCode, p1, true);
 
     //document.getElementById("debugText").innerHTML = "KeyCode Pushed: " + evt.keyCode;
-    document.getElementById("debugText").innerHTML = "Speedometer: " + p1.carSpeed;
+    //document.getElementById("debugText").innerHTML = "Speedometer: " + p1.carSpeed;
 
     evt.preventDefault();
 }
@@ -42,5 +42,5 @@ function keyReleased(evt) {
     setKeyHoldState(evt.keyCode, p1, false);
 
     //document.getElementById("debugText").innerHTML = "KeyCode Released: " + evt.keyCode;
-    document.getElementById("debugText").innerHTML = "Speedometer: " + p1.carSpeed;
+    //document.getElementById("debugText").innerHTML = "Speedometer: " + p1.carSpeed;
 }
