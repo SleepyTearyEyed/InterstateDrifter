@@ -4,8 +4,8 @@ const LANE_CHANGE_ANG = 0.05 * Math.PI;
 const TRAFFIC_CAR_MIN_SPEED = 8;
 const TRAFFIC_CAR_MAX_SPEED = 12;
 const TRAFFIC_CAR_SPEED_MAX_DELTA = 3;
-const CLOSE_ENOUGH_TO_COLLIDE = 40;
-const COLLISION_EFFECT_TIME = 30;
+const CLOSE_ENOUGH_TO_COLLIDE = 20;
+const COLLISION_EFFECT_TIME = 15;
 const COLLISION_EFFECT_MULT = 3;
 
 var trafficCarPoints = [{x: 0, y:7},
@@ -23,6 +23,60 @@ var trafficCarPoints = [{x: 0, y:7},
                         {x:23,y:7},
                         {x:20,y:7}];
 
+function mirrorVector() {
+    var mirrorY = -1000;
+
+    for (var i = 0; i < trafficCarPoints.length; i++) {
+        if (trafficCarPoints[i].y > mirrorY) {
+            mirrorY = trafficCarPoints[i].y;
+        }
+    }
+
+    var mirrorCar = JSON.parse(JSON.stringify(trafficCarPoints));
+    mirrorCar.reverse();
+
+    for (var i = 0; i < mirrorCar.length; i++) {
+        var distFromMirror = mirrorY - mirrorCar[i].y;
+        mirrorCar[i].y = mirrorY + distFromMirror;
+    }
+
+    trafficCarPoints = trafficCarPoints.concat(mirrorCar);
+}
+
+function setupVectorDim() {
+    var leftMost = 1000.0;
+    var rightMost = -1000.0;
+    var topMost = 1000.0;
+    var bottomMost = -1000.0;
+
+    for(var i=0;i<trafficCarPoints.length;i++) {
+        if(trafficCarPoints[i].x < leftMost) {
+            leftMost = trafficCarPoints[i].x;
+        }
+
+        if(trafficCarPoints[i].x > rightMost) {
+            rightMost = trafficCarPoints[i].x;
+        }
+
+        if(trafficCarPoints[i].y < topMost) {
+            topMost = trafficCarPoints[i].y;
+        }
+        
+        if(trafficCarPoints[i].y > bottomMost) {
+            bottomMost = trafficCarPoints[i].y;
+        }
+    // same for y with top and bottom
+    }
+
+    vectorWid = rightMost - leftMost;
+    vectorHei = bottomMost - topMost;
+}
+
+function setupTrafficCarImage()                        {
+    mirrorVector();
+    setupVectorDim();
+}
+
 function trafficCarClass() {
 
     this.x = 5;
@@ -34,60 +88,14 @@ function trafficCarClass() {
     this.speed = 6;
     this.steeringOverrideDir = 0;
     this.steeringOverrideTimer = 0;
+    this.readyToRemove = false;
 
     this.init = function() {
-        this.resetBottom();
-        this.mirrorVector();
-        this.setupVectorDim();
-    }
-
-    this.mirrorVector = function() {
-        var mirrorY = -1000;
-
-        for (var i = 0; i < trafficCarPoints.length; i++) {
-            if (trafficCarPoints[i].y > mirrorY) {
-                mirrorY = trafficCarPoints[i].y;
-            }
+        if (Math.random() < .5) {
+            this.resetBottom();
+        } else {
+            this.resetTop();
         }
-
-        var mirrorCar = JSON.parse(JSON.stringify(trafficCarPoints));
-        mirrorCar.reverse();
-
-        for (var i = 0; i < mirrorCar.length; i++) {
-            var distFromMirror = mirrorY - mirrorCar[i].y;
-            mirrorCar[i].y = mirrorY + distFromMirror;
-        }
-
-        trafficCarPoints = trafficCarPoints.concat(mirrorCar);
-    }
-
-    this.setupVectorDim = function() {
-        var leftMost = 1000.0;
-        var rightMost = -1000.0;
-        var topMost = 1000.0;
-        var bottomMost = -1000.0;
-
-        for(var i=0;i<trafficCarPoints.length;i++) {
-            if(trafficCarPoints[i].x < leftMost) {
-                leftMost = trafficCarPoints[i].x;
-            }
-
-            if(trafficCarPoints[i].x > rightMost) {
-                rightMost = trafficCarPoints[i].x;
-            }
-
-            if(trafficCarPoints[i].y < topMost) {
-                topMost = trafficCarPoints[i].y;
-            }
-            
-            if(trafficCarPoints[i].y > bottomMost) {
-                bottomMost = trafficCarPoints[i].y;
-            }
-        // same for y with top and bottom
-        }
-
-        vectorWid = rightMost - leftMost;
-        vectorHei = bottomMost - topMost;
     }
 
     this.resetTop = function() {
@@ -102,6 +110,7 @@ function trafficCarClass() {
 
     this.startOnTrack = function() {
         var boundaries = getTrackBoundriesAt(this.y);
+        this.lanePerc = randomInRange(0.1, 0.9);
         this.x = this.lanePerc * boundaries.leftSidePixels + (1.0 - this.lanePerc) * boundaries.rightSidePixels; 
     }
 
@@ -110,11 +119,13 @@ function trafficCarClass() {
         this.y -= this.speed;
 
         if (this.y < 0) {
-            this.resetBottom();
+            //this.resetBottom();
+            this.readyToRemove = true;
         }
 
         if (this.y > canvas.height) {
-            this.resetTop();
+            //this.resetTop();
+            this.readyToRemove = true;
         }
 
         var xDistFromP1 = Math.abs(p1.carX - this.x);
@@ -130,7 +141,8 @@ function trafficCarClass() {
                 this.steeringOverrideDir = 1;
             }
             this.steeringOverrideTimer = COLLISION_EFFECT_TIME;
-            this.speed = 0;
+            this.speed *= 0.5;
+            p1.spinoutTimer = 15;
             console.log("Car is hit!");
         }
 

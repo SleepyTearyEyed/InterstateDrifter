@@ -14,6 +14,8 @@ const CAR_ROLL_TO_STOP_WHILE_TURN = 0.975;
 const CAR_MIN_Y = 400;
 const CAR_EDGE_MARGIN = 50;
 
+const MILES_PER_PIXEL = (1.0/528.0) / 12;
+
 var vectorWid = 0;
 var vectorHei = 0;
 
@@ -40,12 +42,16 @@ function carClass() {
     this.needleWobbleOsc = 0;
     this.needleWobbleOsc2 = 0;
     this.carTurnSpeed = 0;
+    // Gets reset each row added.
     this.carOdom = 0;
+    this.totalDistance = 0;
     this.currentCarMoveDelta = 0;
     this.carAng =  -.5 * Math.PI;
     this.carSteering = 0.0;
     this.sensorLeft = 0;
     this.sensorRight = 0;
+
+    this.spinoutTimer = 0;
 
     this.keyHeld_TurnLeft = false;
     this.keyHeld_TurnRight = false;
@@ -119,7 +125,12 @@ function carClass() {
     this.drawCar = function() {
         canvasContext.save();
         canvasContext.translate(this.carX, this.carY);
-        canvasContext.rotate(this.carAng);
+        if (this.spinoutTimer > 0) {
+            canvasContext.rotate(randomInRange(0, 2 * Math.PI));
+        }
+        else {
+            canvasContext.rotate(this.carAng);
+        }
         canvasContext.translate(-vectorWid / 2, -vectorHei / 2);
         canvasContext.beginPath();
         canvasContext.moveTo(carPoints[0].x, carPoints[0].y);
@@ -193,7 +204,13 @@ function carClass() {
         speedOutput = speedOutput.toFixed(1) + " mph";
         canvasContext.fillStyle = "white";
         canvasContext.textAlign = "right";
+        canvasContext.font="8px Verdana";
         canvasContext.fillText(speedOutput, speedometerX + needleLength * 0.75, speedometerY + 25);
+
+        // Distance in miles.
+        var distanceMiles = p1.totalDistance * MILES_PER_PIXEL;
+        canvasContext.font="30px Verdana";
+        canvasContext.fillText(distanceMiles.toFixed(1), speedometerX + needleLength * 0.75, canvas.height / 2);
     }
 
     this.carReset = function() {
@@ -219,6 +236,7 @@ function carClass() {
 
         this.currentCarMoveDelta = this.carSpeed * TRACK_H / 30;
         this.carOdom += this.currentCarMoveDelta; //  * 0.2
+        this.totalDistance += this.currentCarMoveDelta;
 
         var wallBounds = getTrackBoundriesAt(this.carY);
         var wallXLeft = wallBounds.leftSidePixels;
@@ -226,14 +244,18 @@ function carClass() {
         this.sensorLeft = wallXLeft;
         this.sensorRight = wallXRight;
         var carXRange = TRACK_COLS - (wallXLeft + wallXRight);
-    
+
         var steerToward = 0.0;
 
-        if (this.keyHeld_TurnLeft) {
-            steerToward = -1.0;
+        if (this.spinoutTimer > 0) {
+            this.spinoutTimer --;
+        } else {
+            if (this.keyHeld_TurnLeft) {
+                steerToward = -1.0;
+            } else if (this.keyHeld_TurnRight) {
+                steerToward = 1.0;
+            }
 
-        } else if (this.keyHeld_TurnRight) {
-            steerToward = 1.0;
         }
 
         var minTurnAbility = 0.05;
@@ -260,7 +282,7 @@ function carClass() {
         if (nextX > wallXLeft && nextX< wallXRight)
         {
             // Increase or decrease car's speed when up or down arrow is pushed.
-            if (this.keyHeld_Gas) {
+            if (this.keyHeld_Gas && this.spinoutTimer <= 0) {
                 this.carSpeed += CAR_GAS_SPEED;
             } else if (this.keyHeld_Brake) {
                 this.carSpeed -= CAR_BRAKE_SPEED;
