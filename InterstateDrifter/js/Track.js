@@ -180,16 +180,9 @@ function updateTrack() {
     }
 }
 
-function drawTrack() {
-    var trackIndex = 0;
-    var segmentTopLeftX = 0;
-    var segmentTopLeftY = p1.carOdom - TRACK_H;
-    canvasContext.strokeStyle="white";
-
-    segmentTopLeftY = p1.carOdom - TRACK_H;
-
-    colorRect(0, 0, canvas.width, canvas.height, "black");
-    // Area left of left road.
+function drawTrackSides(segmentTopLeftX, segmentTopLeftY)
+{
+        // Area left of left road.
     for (var row = 0; row < trackVector.length; row++) {
         var leftSideTile = trackVector[row].colCenter - trackVector[row].roadSize/2;
         var leftSidePixelX = TRACK_W * leftSideTile;
@@ -214,10 +207,17 @@ function drawTrack() {
         canvasContext.stroke();
     }
 
-    canvasContext.beginPath();
-    canvasContext.moveTo(canvas.width - UI_TILE_THICKNESS * TRACK_W, 0);
-    canvasContext.lineTo(canvas.width - UI_TILE_THICKNESS * TRACK_W, canvas.height);
-    canvasContext.stroke();
+}
+
+function drawTrack() {
+    var trackIndex = 0;
+    var segmentTopLeftX = 0;
+    var segmentTopLeftY = p1.carOdom - TRACK_H;
+    canvasContext.strokeStyle="white";
+
+    segmentTopLeftY = p1.carOdom - TRACK_H;
+
+    drawTrackSides(segmentTopLeftX, segmentTopLeftY);
 
     // Fix this edge case, of top most and bottom most track lines.
     canvasContext.beginPath();
@@ -249,6 +249,6 @@ function drawTrack() {
 
         canvasContext.lineTo(rightSidePixelX,pixelY);
     }
-    canvasContext.strokeStyle="green";
+    canvasContext.strokeStyle="yellow";
     canvasContext.stroke();
 } // End of func

@@ -214,7 +214,7 @@ function trafficCarClass() {
             canvasContext.lineTo(trafficCarPoints[i].x, trafficCarPoints[i].y);
         }
 
-        canvasContext.strokeStyle = "green";
+        canvasContext.strokeStyle = "white";
         canvasContext.stroke();
         canvasContext.restore();
     }

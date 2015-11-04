@@ -64,9 +64,10 @@ function moveEverything() {
 }
 
 function drawEverything() {
+    clearScreen();
     drawTrack();
     p1.drawCar();
-    p1.drawCarUI();
+    drawCarUI(p1);
 
     for (var i = 0; i < trafficCars.length; i ++) {
         trafficCars[i].draw();

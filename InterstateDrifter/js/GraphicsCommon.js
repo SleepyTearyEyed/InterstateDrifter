@@ -33,3 +33,8 @@ function drawBitmapCenteredAtLocationWithRotation(graphic, atX, atY, withAngle) 
     canvasContext.drawImage(graphic, -carPic.width / 2, -carPic.height / 2);
     canvasContext.restore();
 }
+
+function clearScreen()
+{
+    colorRect(0, 0, canvas.width, canvas.height, "black");
+}

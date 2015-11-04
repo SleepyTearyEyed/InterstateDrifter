@@ -153,66 +153,6 @@ function carClass() {
         colorLine(startX, startY, endX, endY, color, width);
     }
 
-    this.drawCarUI = function() {
-        var speedometerX = canvas.width - (UI_TILE_THICKNESS / 2) * TRACK_W;
-        var speedometerY = canvas.height - TRACK_H;
-        var carSpeedRange = CAR_MAX_SPEED - CAR_MIN_SPEED;
-
-        this.needleWobbleOsc += Math.random() * 0.07;
-
-        this.needleWobbleOsc2 -= Math.random() * 0.07;
-        this.needleSpeed += Math.random() * 0.3 * (this.carSpeed / carSpeedRange) * Math.sin(this.needleWobbleOsc + this.needleWobbleOsc2);
-
-        var kValue = 0.90;
-        this.needleSpeed = kValue * this.needleSpeed + (1.0-kValue) * this.carSpeed;
-        if (this.needleSpeed > CAR_MAX_SPEED) {
-            this.needleSpeed = CAR_MAX_SPEED;
-        }
-        
-        var carSpeedPerc = this.needleSpeed / carSpeedRange;
-        var needleLength = TRACK_W * 0.75;
-        var needleAng = carSpeedPerc * (Math.PI + (60 * (Math.PI/180))) + (Math.PI - (30 * (Math.PI/180)));
-        var needleEndX = Math.cos(needleAng) * needleLength + speedometerX;
-        var needleEndY = Math.sin(needleAng) * needleLength + speedometerY;
-
-        var radsBetweenLines = 7.5 * (Math.PI/180);
-
-        for (var r = Math.PI - (30 * (Math.PI/180)); r < Math.PI * 2 + (30 * (Math.PI/180)); r+=radsBetweenLines) {
-            this.drawAngSeg(speedometerX, speedometerY, r, needleLength, needleLength * 1.1, "white", 1);
-        }
-
-        radsBetweenLines = 30 * (Math.PI/180);
-        for (var r = Math.PI; r < Math.PI * 2 + .1; r+=radsBetweenLines) {
-            this.drawAngSeg(speedometerX, speedometerY, r, needleLength * 0.9, needleLength * 1.2, "white", 2);
-        }
-
-        // Speedometer needle.
-        colorLine(speedometerX, speedometerY, needleEndX, needleEndY, "red", 1);
-        this.drawAngSeg(speedometerX, speedometerY, needleAng, needleLength * 0.75, needleLength, "gold", 1);
-
-        // Speedometer needle origin circle.
-        colorCircle(speedometerX, speedometerY, needleLength * 0.05, "white");
-
-        // Speedometer half circle.
-        canvasContext.beginPath();
-        canvasContext.arc(speedometerX, speedometerY, needleLength * 1.20, 30 * (Math.PI/180), Math.PI - (30 * (Math.PI/180)), true);
-        canvasContext.strokeStyle = "white";
-        canvasContext.stroke();
-
-        // Speed text
-        var speedOutput = this.needleSpeed * 15.0;
-        speedOutput = speedOutput.toFixed(1) + " mph";
-        canvasContext.fillStyle = "white";
-        canvasContext.textAlign = "right";
-        canvasContext.font="8px Verdana";
-        canvasContext.fillText(speedOutput, speedometerX + needleLength * 0.75, speedometerY + 25);
-
-        // Distance in miles.
-        var distanceMiles = p1.totalDistance * MILES_PER_PIXEL;
-        canvasContext.font="30px Verdana";
-        canvasContext.fillText(distanceMiles.toFixed(1), speedometerX + needleLength * 0.75, canvas.height / 2);
-    }
-
     this.carReset = function() {
         this.carAng = -0.5 * Math.PI;
         if (this.homeX == undefined) {
