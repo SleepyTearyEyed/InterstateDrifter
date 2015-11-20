@@ -168,23 +168,18 @@ function carClass() {
         var nextX = this.carX;
         var nextY = this.carY;
 
+        // Position of the car vertically based on speed
         var carYRange = this.homeY - CAR_MIN_Y;
         var carSpeedRange = CAR_MAX_SPEED - CAR_MIN_SPEED;
-
         var carSpeedPerc = this.carSpeed / carSpeedRange;
         nextY = this.homeY - carYRange * carSpeedPerc;
 
+        // Translate car movement to odometer and actual car distance
         this.currentCarMoveDelta = this.carSpeed * TRACK_H / 30;
         this.carOdom += this.currentCarMoveDelta; //  * 0.2
         this.totalDistance += this.currentCarMoveDelta;
 
-        var wallBounds = getTrackBoundriesAt(this.carY);
-        var wallXLeft = wallBounds.leftSidePixels;
-        var wallXRight = wallBounds.rightSidePixels;
-        this.sensorLeft = wallXLeft;
-        this.sensorRight = wallXRight;
-        var carXRange = TRACK_COLS - (wallXLeft + wallXRight);
-
+        //Steer car and spin out that prevents from steering
         var steerToward = 0.0;
 
         if (this.spinoutTimer > 0) {
@@ -198,6 +193,7 @@ function carClass() {
 
         }
 
+        // Make steering rate proportional to speed.
         var minTurnAbility = 0.05;
 
         if (carSpeedPerc < minTurnAbility) {
@@ -206,19 +202,32 @@ function carClass() {
             steerToward *= carSpeedPerc * 3.0;
         }
         
+        // Preventing steering from exceeding maximum.
         if (steerToward > 1.0) {
             steerToward = 1.0;
         } else if (steerToward < -1.0) {
             steerToward = -1.0;
         }
 
-        var kValue = 0.80;
+        // Smooth out steering.
+        var kValue = 0.80; 
         this.carSteering = kValue * this.carSteering + (1.0-kValue) * steerToward;
 
+        // Setting visual angle
         this.carAng = (-0.5 + STRAFE_PIVOT_AMT * this.carSteering) * Math.PI;
+        // Steering the car
         nextX +=  STRAFE_SPEED * this.carSteering;
         this.carY = nextY;
 
+
+        var wallBounds = getTrackBoundriesAt(this.carY);
+        var wallXLeft = wallBounds.leftSidePixels;
+        var wallXRight = wallBounds.rightSidePixels;
+        this.sensorLeft = wallXLeft;
+        this.sensorRight = wallXRight;
+        var carXRange = TRACK_COLS - (wallXLeft + wallXRight);
+
+        // Check if you are within the walls
         if (nextX > wallXLeft && nextX< wallXRight)
         {
             // Increase or decrease car's speed when up or down arrow is pushed.
@@ -228,12 +237,14 @@ function carClass() {
                 this.carSpeed -= CAR_BRAKE_SPEED;
             }
 
+            // Decreasing speed when you are turning.
             if (this.keyHeld_TurnLeft || this.keyHeld_TurnRight) {
                 this.carSpeed *= CAR_ROLL_TO_STOP_WHILE_TURN;
             } else {
                 this.carSpeed *= CAR_ROLL_TO_STOP;
             }
 
+            // Limiting the car's speed.
             if (this.carSpeed > CAR_MAX_SPEED) {
                 this.carSpeed = CAR_MAX_SPEED;
             } else if (this.carSpeed < CAR_MIN_SPEED) {
@@ -241,7 +252,7 @@ function carClass() {
             }
 
             this.carX = nextX;
-        } else {
+        } else { // Gone out of bounds. Decrease speed, dragging.
             this.carSpeed *= CAR_HIT_WALL_SPEED;
             if (this.carX < wallXLeft) {
                 this.carX = wallXLeft;

@@ -180,7 +180,7 @@ function updateTrack() {
     }
 }
 
-function drawTrackSides(segmentTopLeftX, segmentTopLeftY)
+function drawNonRoad(segmentTopLeftX, segmentTopLeftY)
 {
         // Area left of left road.
     for (var row = 0; row < trackVector.length; row++) {
@@ -209,6 +209,35 @@ function drawTrackSides(segmentTopLeftX, segmentTopLeftY)
 
 }
 
+// -1 for left side of the road 1 for right side.
+function drawRoadEdge(segmentTopLeftY, roadSideMult) {
+    // Fix this edge case, of top most and bottom most track lines.
+    canvasContext.beginPath();
+    var sideTile = trackVector[0].colCenter + roadSideMult * trackVector[0].roadSize/2;
+    var sidePixelX = TRACK_W * sideTile;
+
+    canvasContext.moveTo(sidePixelX, 0);
+    for (var row = 0; row < trackVector.length; row++) {
+        sideTile = trackVector[row].colCenter + roadSideMult * trackVector[row].roadSize/2;
+        sidePixelX = TRACK_W * sideTile;
+        var pixelY = segmentTopLeftY + TRACK_H * row;
+
+
+        canvasContext.lineTo(sidePixelX,pixelY);
+
+    }
+    canvasContext.strokeStyle="yellow";
+    canvasContext.stroke();
+}
+
+function drawLeftRoadEdge(segmentTopLeftY) {
+    drawRoadEdge(segmentTopLeftY, -1);
+}
+
+function drawRightRoadEdge(segmentTopLeftY) {
+    drawRoadEdge(segmentTopLeftY, 1);
+}
+
 function drawTrack() {
     var trackIndex = 0;
     var segmentTopLeftX = 0;
@@ -217,38 +246,9 @@ function drawTrack() {
 
     segmentTopLeftY = p1.carOdom - TRACK_H;
 
-    drawTrackSides(segmentTopLeftX, segmentTopLeftY);
+    drawNonRoad(segmentTopLeftX, segmentTopLeftY);
 
-    // Fix this edge case, of top most and bottom most track lines.
-    canvasContext.beginPath();
-    var leftSideTile = trackVector[0].colCenter - trackVector[0].roadSize/2;
-    var leftSidePixelX = TRACK_W * leftSideTile;
+    drawLeftRoadEdge(segmentTopLeftY);
 
-    canvasContext.moveTo(leftSidePixelX, 0);
-    for (var row = 0; row < trackVector.length; row++) {
-        leftSideTile = trackVector[row].colCenter - trackVector[row].roadSize/2;
-        leftSidePixelX = TRACK_W * leftSideTile;
-        var pixelY = segmentTopLeftY + TRACK_H * row;
-
-
-        canvasContext.lineTo(leftSidePixelX,pixelY);
-
-    }
-    canvasContext.strokeStyle="yellow";
-    canvasContext.stroke();
-
-    canvasContext.beginPath();
-    var rightSideTile = trackVector[0].colCenter + trackVector[0].roadSize/2;
-    var rightSidePixelX = TRACK_W * rightSideTile;
-    canvasContext.moveTo(rightSidePixelX, 0);
-    for (var row = 0; row < trackVector.length; row++) {
-        rightSideTile = trackVector[row].colCenter + trackVector[row].roadSize/2;
-        rightSidePixelX = TRACK_W * rightSideTile;
-        var pixelY = segmentTopLeftY + TRACK_H * row;
-
-
-        canvasContext.lineTo(rightSidePixelX,pixelY);
-    }
-    canvasContext.strokeStyle="yellow";
-    canvasContext.stroke();
+    drawRightRoadEdge(segmentTopLeftY);
 } // End of func
