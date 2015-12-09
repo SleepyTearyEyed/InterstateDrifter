@@ -1,5 +1,9 @@
 var canvas;
 var canvasContext;
+var zoom = 1;
+var zoomGoal = 1;
+const ZOOM_MAX = 1.5;
+const ZOOM_MIN = 0.5;
 
 // The player as represented by the car.
 var p1 = new carClass();
@@ -64,14 +68,24 @@ function moveEverything() {
 }
 
 function drawEverything() {
+    var gameAreaWidth = canvas.width - UI_TILE_THICKNESS * TRACK_W;
+
     clearScreen();
+    canvasContext.save();
+    canvasContext.translate(gameAreaWidth/2, p1.carY - canvas.height);
+    canvasContext.scale(zoom, zoom);
+    canvasContext.translate(-p1.carX, -p1.carY);
+    zoomGoal = ZOOM_MIN + (1.0 - p1.carSpeed / CAR_MAX_SPEED) * (ZOOM_MAX - ZOOM_MIN);
+    zoom = zoom * 0.9 + zoomGoal * 0.1;
     drawTrack();
     p1.drawCar();
-    drawCarUI(p1);
 
     for (var i = 0; i < trafficCars.length; i ++) {
         trafficCars[i].draw();
     }
+
+    canvasContext.restore();
+    drawCarUI(p1);
 }
 
 function randomInRange(min, max) {

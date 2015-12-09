@@ -3,6 +3,10 @@ function drawCarUI (forCar) {
         var speedometerY = canvas.height - TRACK_H;
         var carSpeedRange = CAR_MAX_SPEED - CAR_MIN_SPEED;
 
+        canvasContext.fillStyle = "black";
+        canvasContext.fillRect(canvas.width - UI_TILE_THICKNESS * TRACK_W, 0,
+            UI_TILE_THICKNESS * TRACK_W, canvas.height);
+
         forCar.needleWobbleOsc += Math.random() * 0.07;
 
         forCar.needleWobbleOsc2 -= Math.random() * 0.07;

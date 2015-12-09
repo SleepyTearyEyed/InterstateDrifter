@@ -1,7 +1,7 @@
 const TRACK_W = 40; // Track collision width.
 const TRACK_H = 40; // Track collision height.
 const TRACK_COLS = 20; // Number of track columns.
-const TRACK_ROWS = 17;
+const TRACK_ROWS = 36;
 const TRACK_WALL_MARGIN = 1;
 
 var trackVector = [];
@@ -182,6 +182,8 @@ function updateTrack() {
 
 function drawNonRoad(segmentTopLeftX, segmentTopLeftY)
 {
+    var lineOverdrawLen = 600;
+
         // Area left of left road.
     for (var row = 0; row < trackVector.length; row++) {
         var leftSideTile = trackVector[row].colCenter - trackVector[row].roadSize/2;
@@ -189,7 +191,7 @@ function drawNonRoad(segmentTopLeftX, segmentTopLeftY)
         var pixelY = segmentTopLeftY + TRACK_H * row;
 
         canvasContext.beginPath();
-        canvasContext.moveTo(0, pixelY);
+        canvasContext.moveTo(-lineOverdrawLen, pixelY);
         canvasContext.lineTo(leftSidePixelX,pixelY);
         canvasContext.stroke();
     }
@@ -202,7 +204,7 @@ function drawNonRoad(segmentTopLeftX, segmentTopLeftY)
         var pixelY = segmentTopLeftY + TRACK_H * row;
 
         canvasContext.beginPath();
-        canvasContext.moveTo(canvas.width - UI_TILE_THICKNESS * TRACK_W, pixelY);
+        canvasContext.moveTo(canvas.width - UI_TILE_THICKNESS * TRACK_W + lineOverdrawLen, pixelY);
         canvasContext.lineTo(rightSidePixelX,pixelY);
         canvasContext.stroke();
     }

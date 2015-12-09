@@ -2,6 +2,8 @@ const KEY_LEFT_ARROW = 37;
 const KEY_RIGHT_ARROW = 39;
 const KEY_DOWN_ARROW = 40;
 const KEY_FORWARD_ARROW = 38;
+const KEY_MINUS = 189;
+const KEY_PLUS = 187;
 
 
 function initInput() {
@@ -32,7 +34,27 @@ function setKeyHoldState(thisKey, thisCar, setTo) {
 function keyPressed(evt) {
     setKeyHoldState(evt.keyCode, p1, true);
 
-    //document.getElementById("debugText").innerHTML = "KeyCode Pushed: " + evt.keyCode;
+    if (evt.keyCode == KEY_PLUS) {
+        zoom += 0.1;
+
+        if (zoom > ZOOM_MAX) {
+            zoom = ZOOM_MAX;
+        }
+
+        console.log("Increased = " + zoom);
+    }
+
+    if (evt.keyCode == KEY_MINUS) {
+        zoom -= 0.1;
+
+        if (zoom < ZOOM_MIN) {
+            zoom = ZOOM_MIN;
+        }
+
+        console.log("Decreased = " + zoom);
+    }
+
+    document.getElementById("debugText").innerHTML = "KeyCode Pushed: " + evt.keyCode;
     //document.getElementById("debugText").innerHTML = "Speedometer: " + p1.carSpeed;
 
     evt.preventDefault();

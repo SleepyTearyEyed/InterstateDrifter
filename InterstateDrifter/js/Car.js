@@ -11,7 +11,7 @@ const CAR_HIT_WALL_SPEED = 0.95;
 const CAR_ROLL_TO_STOP = 0.981;
 const CAR_ROLL_TO_STOP_WHILE_TURN = 0.975;
 
-const CAR_MIN_Y = 400;
+const CAR_MIN_Y = 1000;
 const CAR_EDGE_MARGIN = 50;
 
 const MILES_PER_PIXEL = (1.0/528.0) / 12;
@@ -157,7 +157,7 @@ function carClass() {
         this.carAng = -0.5 * Math.PI;
         if (this.homeX == undefined) {
             this.homeX = canvas.width / 2;
-            this.homeY = canvas.height - CAR_EDGE_MARGIN;
+            this.homeY = canvas.height * 2 - CAR_EDGE_MARGIN;
         }
 
         this.carX = this.homeX;
