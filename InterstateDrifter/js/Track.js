@@ -24,6 +24,7 @@ const TRACK_ROAD_WIDTH_MIN = 4;
 const TRACK_ROAD_WIDTH_MAX = 10;
 const TRACK_ROAD_WIDTH_DELTA_MIN = 0.2;
 const TRACK_ROAD_WIDTH_DELTA_MAX = 0.5;
+const TRACK_ROAD_WIDTH_MIN_FOR_4_LANES = 8;
 var roadWidth = 8;
 var roadWidthDelta = 0;
 var framesTillRoadWidthChange = 0;
@@ -212,7 +213,7 @@ function drawNonRoad(segmentTopLeftX, segmentTopLeftY)
 }
 
 // -1 for left side of the road 1 for right side.
-function drawRoadEdge(segmentTopLeftY, roadSideMult) {
+function drawRoadEdge(segmentTopLeftY, roadSideMult, roadColor) {
     // Fix this edge case, of top most and bottom most track lines.
     canvasContext.beginPath();
     var sideTile = trackVector[0].colCenter + roadSideMult * trackVector[0].roadSize/2;
@@ -228,16 +229,54 @@ function drawRoadEdge(segmentTopLeftY, roadSideMult) {
         canvasContext.lineTo(sidePixelX,pixelY);
 
     }
-    canvasContext.strokeStyle="yellow";
+    canvasContext.strokeStyle= roadColor;
     canvasContext.stroke();
 }
 
+function drawRoadEdgeSpecial(segmentTopLeftY, roadSideMult, roadColor) {
+    var sideTile = trackVector[0].colCenter + roadSideMult * trackVector[0].roadSize/2;
+    var sidePixelX = TRACK_W * sideTile;
+    var pixelY = 0;
+    var prevX = 0;
+    var prevY = 0;
+
+    document.getElementById("debugText").innerHTML = "";
+    for (var row = 0; row < trackVector.length; row++) {
+        document.getElementById("debugText").innerHTML += trackVector[row].roadSize;
+        document.getElementById("debugText").innerHTML += "<br>";
+        if (trackVector[row].roadSize >= TRACK_ROAD_WIDTH_MIN_FOR_4_LANES) {
+            canvasContext.beginPath();
+            canvasContext.moveTo(sidePixelX, pixelY);
+            prevX = sidePixelX;
+            prevY = pixelY;
+        }
+            sideTile = trackVector[row].colCenter + roadSideMult * trackVector[row].roadSize/2;
+            sidePixelX = TRACK_W * sideTile;
+            pixelY = segmentTopLeftY + TRACK_H * row;
+
+        if (trackVector[row].roadSize >= TRACK_ROAD_WIDTH_MIN_FOR_4_LANES) {
+            var avgX = prevX * 0.5 + sidePixelX * 0.5;
+            var avgY = prevY * 0.5 + pixelY * 0.5;
+            canvasContext.lineTo(avgX,avgY);
+            canvasContext.strokeStyle= roadColor;
+            canvasContext.stroke();
+        }
+    }
+}
+
 function drawLeftRoadEdge(segmentTopLeftY) {
-    drawRoadEdge(segmentTopLeftY, -1);
+    drawRoadEdge(segmentTopLeftY, -1, "red");
 }
 
 function drawRightRoadEdge(segmentTopLeftY) {
-    drawRoadEdge(segmentTopLeftY, 1);
+    drawRoadEdge(segmentTopLeftY, 1, "red");
+}
+
+function drawCenterLine(segmentTopLeftY) {
+    drawRoadEdge(segmentTopLeftY, -0.02, "yellow");
+    drawRoadEdge(segmentTopLeftY, 0.02, "yellow");
+    drawRoadEdgeSpecial(segmentTopLeftY, -.5, "gray");
+    drawRoadEdgeSpecial(segmentTopLeftY, .5, "gray");
 }
 
 function drawTrack() {
@@ -251,6 +290,8 @@ function drawTrack() {
     drawNonRoad(segmentTopLeftX, segmentTopLeftY);
 
     drawLeftRoadEdge(segmentTopLeftY);
+
+    drawCenterLine(segmentTopLeftY);
 
     drawRightRoadEdge(segmentTopLeftY);
 } // End of func

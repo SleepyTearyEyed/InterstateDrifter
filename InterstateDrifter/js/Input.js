@@ -54,7 +54,7 @@ function keyPressed(evt) {
         console.log("Decreased = " + zoom);
     }
 
-    document.getElementById("debugText").innerHTML = "KeyCode Pushed: " + evt.keyCode;
+    //document.getElementById("debugText").innerHTML = "KeyCode Pushed: " + evt.keyCode;
     //document.getElementById("debugText").innerHTML = "Speedometer: " + p1.carSpeed;
 
     evt.preventDefault();
