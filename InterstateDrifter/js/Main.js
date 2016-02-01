@@ -55,6 +55,28 @@ function moveEverything() {
     if (trafficCars.length < 4 && Math.random() < 0.02) {
         spawnTrafficCar();
     }
+
+    for (var i = 0; i < trafficCars.length; i ++) {
+        for (var ii = i+1; ii < trafficCars.length; ii ++) {
+            var laneDiff = Math.abs(trafficCars[i].lanePerc - trafficCars[ii].lanePerc);
+
+            if (laneDiff < 0.1) {
+                var yDiff = Math.abs(trafficCars[i].y - trafficCars[ii].y);
+
+                if (yDiff <= CLOSE_ENOUGH_TO_AVOID) {
+                    var futureYDiff = Math.abs((trafficCars[i].y - trafficCars[i].speed) - 
+                                      (trafficCars[ii].y - trafficCars[ii].speed));
+                    if (yDiff > futureYDiff) {
+                        var tempSpeedI = trafficCars[i].speed;
+
+                        trafficCars[i].speed = trafficCars[ii].speed;
+                        trafficCars[ii].speed = tempSpeedI;
+                        console.log("bumped" + i + " : " + ii);
+                    }
+                }
+            }
+        }
+    }
     
     for (var i = 0; i < trafficCars.length; i ++) {
         trafficCars[i].move();

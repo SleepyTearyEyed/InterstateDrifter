@@ -240,10 +240,10 @@ function drawRoadEdgeSpecial(segmentTopLeftY, roadSideMult, roadColor) {
     var prevX = 0;
     var prevY = 0;
 
-    document.getElementById("debugText").innerHTML = "";
+    //document.getElementById("debugText").innerHTML = "";
     for (var row = 0; row < trackVector.length; row++) {
-        document.getElementById("debugText").innerHTML += trackVector[row].roadSize;
-        document.getElementById("debugText").innerHTML += "<br>";
+        //document.getElementById("debugText").innerHTML += trackVector[row].roadSize;
+        //document.getElementById("debugText").innerHTML += "<br>";
         if (trackVector[row].roadSize >= TRACK_ROAD_WIDTH_MIN_FOR_4_LANES) {
             canvasContext.beginPath();
             canvasContext.moveTo(sidePixelX, pixelY);
