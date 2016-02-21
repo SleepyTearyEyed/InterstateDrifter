@@ -162,6 +162,7 @@ function carClass() {
 
         this.carX = this.homeX;
         this.carY = this.homeY;
+        this.carSpeed = 0;
     }
 
     this.carMove = function() {

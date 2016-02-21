@@ -53,16 +53,25 @@ function drawCarUI (forCar) {
         canvasContext.strokeStyle = "white";
         canvasContext.stroke();
 
+        // Text center of UI
+        var centerTextX = speedometerX + needleLength * 0.75;
+
         // Speed text
         var speedOutput = forCar.needleSpeed * 15.0;
         speedOutput = speedOutput.toFixed(1) + " mph";
         canvasContext.fillStyle = "white";
         canvasContext.textAlign = "right";
         canvasContext.font="8px Poiret One";
-        canvasContext.fillText(speedOutput, speedometerX + needleLength * 0.75, speedometerY + 25);
+        canvasContext.fillText(speedOutput, centerTextX, speedometerY + 25);
 
         // Distance in miles.
         var distanceMiles = forCar.totalDistance * MILES_PER_PIXEL;
         canvasContext.font="30px Poiret One";
-        canvasContext.fillText(distanceMiles.toFixed(1), speedometerX + needleLength * 0.75, canvas.height / 2);
+        canvasContext.fillText(distanceMiles.toFixed(1), centerTextX, canvas.height / 2);
+
+        // Timer
+        var whole = Math.floor(timeTenths / 10);
+        var decimal = timeTenths - whole * 10;
+        canvasContext.textAlign = "left";
+        canvasContext.fillText(whole + "." + decimal, centerTextX, canvas.height / 4);
     }

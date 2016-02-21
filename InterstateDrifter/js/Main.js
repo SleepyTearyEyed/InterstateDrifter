@@ -2,6 +2,7 @@ var canvas;
 var canvasContext;
 var zoom = 1;
 var zoomGoal = 1;
+var timeTenths = 100;
 const ZOOM_MAX = 1.5;
 const ZOOM_MIN = 0.5;
 
@@ -45,7 +46,27 @@ function loadingDoneSoStartGame() {
         moveEverything();
         drawEverything();
     }, 1000 / framesPerSecond); // 1000 equals one sec. Divide by frames to get fps.
+
+    setInterval(function()
+    {
+        timeTenths--;
+        if (timeTenths < 0) {
+            timeTenths = 0;
+            reset();
+        }
+    }, 100);
 }
+
+function reset(){
+    initTrack();
+    // Player car.
+    p1.carReset();
+    trackCenterCar();
+    timeTenths = 100;
+    zoom = ZOOM_MIN;
+    trafficCars = [];
+}
+
 // Everything gets moved then drawn. 
 // Updating the car's position and the level first then draw them on screen.
 function moveEverything() {
