@@ -2,7 +2,7 @@ var canvas;
 var canvasContext;
 var zoom = 1;
 var zoomGoal = 1;
-var timeTenths = 100;
+var timeTenths;
 const ZOOM_MAX = 1.5;
 const ZOOM_MIN = 0.5;
 
@@ -36,7 +36,7 @@ function loadingDoneSoStartGame() {
     initTrack();
     // Player car.
     p1.initCar("Drifter");
-
+    resetTimer();
     initInput();
 
     // The game loop.
@@ -62,9 +62,13 @@ function reset(){
     // Player car.
     p1.carReset();
     trackCenterCar();
-    timeTenths = 100;
+    resetTimer();
     zoom = ZOOM_MIN;
     trafficCars = [];
+}
+
+function resetTimer(){
+    timeTenths = 100 * 10;
 }
 
 // Everything gets moved then drawn. 

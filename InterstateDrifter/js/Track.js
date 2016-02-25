@@ -80,6 +80,7 @@ function getTrackBoundriesAt(carY) {
 
     // To avoid index out of bounds make sure it's within the track wall.
     if (tileRow < 0 || tileRow >= TRACK_ROWS) {
+        console.log("Tried to set boundries outside of track data.")
         return {leftSidePixels: 0, rightSidePixels: TRACK_COLS};
     }
 
@@ -103,6 +104,9 @@ function getTrackBoundriesAt(carY) {
     leftReturn *= TRACK_W;
     rightReturn *= TRACK_W;
 
+    /*console.log("leftWallCurrentRow=" + leftWallCurrentRow + "\ntileNextRow=" + 
+                 tileNextRow + "\nleftWallNextRow=" + leftWallNextRow + "\ninterpPerc=" + interpPerc +
+                 "\nleftReturn=" + leftReturn + "\nrightReturn=" + rightReturn);*/
     return {leftSidePixels: leftReturn, rightSidePixels: rightReturn};
 }
 

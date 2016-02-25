@@ -100,19 +100,23 @@ function trafficCarClass() {
     }
 
     this.resetTop = function() {
-        this.y = 0;
-        this.startOnTrack();
+        //this.y = 0;
+        this.y = TRACK_H * 4;
+        this.startOnTrack(0.1, 0.4);
     }
 
     this.resetBottom = function() {
-        this.y = TRACK_ROWS * TRACK_H;
-        this.startOnTrack();
+        this.y = (TRACK_ROWS - 4) * TRACK_H;
+        //this.y = p1.carY;
+        console.log(p1.carY + " " + (TRACK_ROWS - 4) * TRACK_H);
+        this.startOnTrack(0.5, 0.9);
     }
 
-    this.startOnTrack = function() {
+    this.startOnTrack = function(leftSide, rightSide) {
         var boundaries = getTrackBoundriesAt(this.y);
-        this.lanePerc = randomInRange(0.1, 0.9);
-        this.x = this.lanePerc * boundaries.leftSidePixels + (1.0 - this.lanePerc) * boundaries.rightSidePixels; 
+        this.lanePerc = randomInRange(leftSide, rightSide);
+        console.log(this.lanePerc + " " + boundaries.leftSidePixels + " " + boundaries.rightSidePixels);
+        this.x = (1.0 - this.lanePerc) * boundaries.leftSidePixels + this.lanePerc * boundaries.rightSidePixels; 
     }
 
     this.move = function() {
