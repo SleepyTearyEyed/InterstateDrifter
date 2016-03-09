@@ -90,38 +90,52 @@ function trafficCarClass() {
     this.steeringOverrideDir = 0;
     this.steeringOverrideTimer = 0;
     this.readyToRemove = false;
+    this.goingSouth = false;
 
     this.init = function() {
-        if (Math.random() < .5) {
-            this.resetBottom();
-        } else {
+        this.goingSouth = Math.random() < 0.5;
+        if (this.goingSouth || Math.random() < 0.5) {
             this.resetTop();
+        } else {
+            this.resetBottom(); 
+        }
+
+        if (this.goingSouth) {
+            this.startOnTrack(0.1, 0.4);
+        } else {
+            this.startOnTrack(0.6, 0.9);
         }
     }
 
     this.resetTop = function() {
         //this.y = 0;
         this.y = TRACK_H * 4;
-        this.startOnTrack(0.1, 0.4);
     }
 
     this.resetBottom = function() {
         this.y = (TRACK_ROWS - 4) * TRACK_H;
         //this.y = p1.carY;
-        console.log(p1.carY + " " + (TRACK_ROWS - 4) * TRACK_H);
-        this.startOnTrack(0.5, 0.9);
+        console.log("resetBottom: " + p1.carY + " " + (TRACK_ROWS - 4) * TRACK_H);
+        
     }
 
     this.startOnTrack = function(leftSide, rightSide) {
         var boundaries = getTrackBoundriesAt(this.y);
         this.lanePerc = randomInRange(leftSide, rightSide);
-        console.log(this.lanePerc + " " + boundaries.leftSidePixels + " " + boundaries.rightSidePixels);
+        console.log("startOnTrack: lanePerc=" + this.lanePerc + 
+                    "\nleftSidePixels=" + boundaries.leftSidePixels + 
+                    "\nrightSidePixels=" + boundaries.rightSidePixels);
         this.x = (1.0 - this.lanePerc) * boundaries.leftSidePixels + this.lanePerc * boundaries.rightSidePixels; 
     }
 
     this.move = function() {
         this.y += p1.currentCarMoveDelta;
-        this.y -= this.speed;
+
+        if (this.goingSouth) {
+            this.y += this.speed;
+        } else {
+            this.y -= this.speed;
+        }
 
         if (this.y < 0) {
             //this.resetBottom();
@@ -148,7 +162,7 @@ function trafficCarClass() {
             this.steeringOverrideTimer = COLLISION_EFFECT_TIME;
             this.speed *= 0.5;
             p1.spinoutTimer = 15;
-            console.log("Car is hit!");
+            //console.log("Car is hit!");
         }
 
         var boundaries = getTrackBoundriesAt(this.y);
@@ -192,12 +206,21 @@ function trafficCarClass() {
 
         if (this.framesTillLaneSwitch < 0 && this.steeringOverrideDir == 0) {
             //this.lanePerc = randomInRange(LANE_MARGIN_PERC, 1.0 - LANE_MARGIN_PERC);
-            if (Math.random() < 0.5) {
-                this.lanePerc = 1.0 - 0.625;
-            }
-            else {
-                this.lanePerc = 1.0 - 0.875;
-            }
+            if (this.goingSouth) {
+                if (Math.random() < 0.5) {
+                    this.lanePerc = 0.625;
+                }
+                else {
+                    this.lanePerc = 0.875;
+                }
+            }else {
+                if (Math.random() < 0.5) {
+                    this.lanePerc = 1.0 - 0.625;
+                }
+                else {
+                    this.lanePerc = 1.0 - 0.875;
+                }
+            }         
 
             this.framesTillLaneSwitch = Math.random() * 30 + 30;
             this.speed += randomInRange(-TRAFFIC_CAR_SPEED_MAX_DELTA, TRAFFIC_CAR_SPEED_MAX_DELTA);
@@ -217,7 +240,13 @@ function trafficCarClass() {
         //colorCircle(this.targetX, this.y, 5, "#ff7f00");
         canvasContext.save();
         canvasContext.translate(this.x, this.y);
-        canvasContext.rotate(this.angle);
+
+        if (this.goingSouth)
+        {
+            canvasContext.rotate(- this.angle);
+        } else {
+            canvasContext.rotate(this.angle);
+        }
         //canvasContext.translate(-vectorWid / 2, -vectorHei / 2);
         canvasContext.beginPath();
         canvasContext.moveTo(trafficCarPoints[0].x, trafficCarPoints[0].y);

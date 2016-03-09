@@ -4,6 +4,7 @@ const KEY_DOWN_ARROW = 40;
 const KEY_FORWARD_ARROW = 38;
 const KEY_MINUS = 189;
 const KEY_PLUS = 187;
+const KEY_SPACE = 32;
 
 
 function initInput() {
@@ -32,6 +33,14 @@ function setKeyHoldState(thisKey, thisCar, setTo) {
 }
 
 function keyPressed(evt) {
+    if (attractLoop) {
+        if (evt.keyCode == KEY_SPACE) {
+            attractLoop = false;
+            reset();
+        }
+        return
+    }
+
     setKeyHoldState(evt.keyCode, p1, true);
 
     if (evt.keyCode == KEY_PLUS) {

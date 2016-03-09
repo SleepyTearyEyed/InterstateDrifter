@@ -56,22 +56,34 @@ function drawCarUI (forCar) {
         // Text center of UI
         var centerTextX = speedometerX + needleLength * 0.75;
 
-        // Speed text
-        var speedOutput = forCar.needleSpeed * 15.0;
-        speedOutput = speedOutput.toFixed(1) + " mph";
-        canvasContext.fillStyle = "white";
-        canvasContext.textAlign = "right";
-        canvasContext.font="8px Poiret One";
-        canvasContext.fillText(speedOutput, centerTextX, speedometerY + 25);
+        if (attractLoop == false) {
+            // Speed text
+            var speedOutput = forCar.needleSpeed * 15.0;
+            speedOutput = speedOutput.toFixed(1) + " mph";
+            canvasContext.fillStyle = "white";
+            canvasContext.textAlign = "right";
+            canvasContext.font="8px Poiret One";
+            canvasContext.fillText(speedOutput, centerTextX, speedometerY + 25);
 
-        // Distance in miles.
-        var distanceMiles = forCar.totalDistance * MILES_PER_PIXEL;
-        canvasContext.font="30px Poiret One";
-        canvasContext.fillText(distanceMiles.toFixed(1), centerTextX, canvas.height / 2);
+            // Distance in miles.
+            var distanceMiles = forCar.totalDistance * MILES_PER_PIXEL;
+            canvasContext.font="30px Poiret One";
+            canvasContext.textAlign = "center";
+            canvasContext.fillText("Distance", centerTextX, canvas.height / 2 - 35);
+            canvasContext.textAlign = "left";
+            canvasContext.fillText(distanceMiles.toFixed(1), centerTextX - 30, canvas.height / 2);
 
-        // Timer
-        var whole = Math.floor(timeTenths / 10);
-        var decimal = timeTenths - whole * 10;
-        canvasContext.textAlign = "left";
-        canvasContext.fillText(whole + "." + decimal, centerTextX, canvas.height / 4);
+            // Timer
+            var whole = Math.floor(timeTenths / 10);
+            var decimal = timeTenths - whole * 10;
+            canvasContext.textAlign = "center";
+            canvasContext.fillText("Timer", centerTextX, canvas.height / 4 - 35)
+            canvasContext.textAlign = "left";
+            canvasContext.fillText(whole + "." + decimal, centerTextX - 25, canvas.height / 4);
+        }
+        else {
+            canvasContext.font="50px Poiret One";
+            canvasContext.textAlign = "center";
+            canvasContext.fillText("Title", canvas.width - (UI_TILE_THICKNESS * TRACK_W) / 2, canvas.height / 2);
+        }
     }

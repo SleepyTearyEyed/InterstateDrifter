@@ -33,6 +33,7 @@ var framesTillRoadWidthChange = 0;
 const UI_TILE_THICKNESS = 4;
 
 function initTrack() {
+    trackVector = [];
     for (var i = 0; i < TRACK_ROWS; i++) {
         trackVector.push({colCenter: 9, roadSize: 12});
     }
@@ -79,9 +80,13 @@ function getTrackBoundriesAt(carY) {
     tileRow = Math.floor(tileRow) + 1; // move down one row
 
     // To avoid index out of bounds make sure it's within the track wall.
-    if (tileRow < 0 || tileRow >= TRACK_ROWS) {
-        console.log("Tried to set boundries outside of track data.")
-        return {leftSidePixels: 0, rightSidePixels: TRACK_COLS};
+    if (tileRow < 0) {
+        //console.log("Tried to set boundries outside of track data.\n carY=" + carY + "\n" + "tileRow=" + tileRow);
+        //return {leftSidePixels: 0, rightSidePixels: TRACK_COLS};
+        tileRow = 0;
+    }
+    else if (tileRow >= TRACK_ROWS) {
+        tileRow = TRACK_ROWS - 1;
     }
 
     var leftWallCurrentRow = trackVector[tileRow].colCenter - 
