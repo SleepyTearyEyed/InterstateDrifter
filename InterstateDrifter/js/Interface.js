@@ -69,21 +69,26 @@ function drawCarUI (forCar) {
             var distanceMiles = forCar.totalDistance * MILES_PER_PIXEL;
             canvasContext.font="30px Poiret One";
             canvasContext.textAlign = "center";
-            canvasContext.fillText("Distance", centerTextX, canvas.height / 2 - 35);
+            canvasContext.fillText("Distance", centerTextX - 20, canvas.height / 2 - 35);
             canvasContext.textAlign = "left";
-            canvasContext.fillText(distanceMiles.toFixed(1), centerTextX - 30, canvas.height / 2);
+            canvasContext.fillText(distanceMiles.toFixed(1), centerTextX - 50, canvas.height / 2);
 
             // Timer
             var whole = Math.floor(timeTenths / 10);
             var decimal = timeTenths - whole * 10;
             canvasContext.textAlign = "center";
-            canvasContext.fillText("Timer", centerTextX, canvas.height / 4 - 35)
+            canvasContext.fillText("Timer", centerTextX - 20, canvas.height / 4 - 35)
             canvasContext.textAlign = "left";
-            canvasContext.fillText(whole + "." + decimal, centerTextX - 25, canvas.height / 4);
+            canvasContext.fillText(whole + "." + decimal, centerTextX - 45, canvas.height / 4);
         }
         else {
             canvasContext.font="50px Poiret One";
             canvasContext.textAlign = "center";
-            canvasContext.fillText("Title", canvas.width - (UI_TILE_THICKNESS * TRACK_W) / 2, canvas.height / 2);
+            canvasContext.fillText("Interstate Drifter", (canvas.width - UI_TILE_THICKNESS * TRACK_W) / 2, canvas.height / 2);
+            canvasContext.font="25px Poiret One";
+            canvasContext.fillText("By Paul Diaz", (canvas.width - UI_TILE_THICKNESS * TRACK_W) / 2, canvas.height / 2 + 40);
+            canvasContext.fillText("Pass cars to extend time!", (canvas.width - UI_TILE_THICKNESS * TRACK_W) / 2, canvas.height / 2 + 100);
+            canvasContext.fillText("SPACEBAR", canvas.width - (UI_TILE_THICKNESS * TRACK_W) / 2, canvas.height / 2 + 10);
+            canvasContext.fillText("to start!", canvas.width - (UI_TILE_THICKNESS * TRACK_W) / 2, canvas.height / 2 + 35);
         }
     }

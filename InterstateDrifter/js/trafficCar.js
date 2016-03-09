@@ -91,6 +91,8 @@ function trafficCarClass() {
     this.steeringOverrideTimer = 0;
     this.readyToRemove = false;
     this.goingSouth = false;
+    this.directionOfPlayerCar = 0;
+    this.gotScored = 0;
 
     this.init = function() {
         this.goingSouth = Math.random() < 0.5;
@@ -101,8 +103,10 @@ function trafficCarClass() {
         }
 
         if (this.goingSouth) {
+            this.directionOfPlayerCar = -1;
             this.startOnTrack(0.1, 0.4);
         } else {
+            this.directionOfPlayerCar = 1
             this.startOnTrack(0.6, 0.9);
         }
     }
@@ -122,14 +126,16 @@ function trafficCarClass() {
     this.startOnTrack = function(leftSide, rightSide) {
         var boundaries = getTrackBoundriesAt(this.y);
         this.lanePerc = randomInRange(leftSide, rightSide);
-        console.log("startOnTrack: lanePerc=" + this.lanePerc + 
+        /*console.log("startOnTrack: lanePerc=" + this.lanePerc + 
                     "\nleftSidePixels=" + boundaries.leftSidePixels + 
-                    "\nrightSidePixels=" + boundaries.rightSidePixels);
+                    "\nrightSidePixels=" + boundaries.rightSidePixels);*/
         this.x = (1.0 - this.lanePerc) * boundaries.leftSidePixels + this.lanePerc * boundaries.rightSidePixels; 
     }
 
     this.move = function() {
         this.y += p1.currentCarMoveDelta;
+
+        //console.log("AI Speed = " + this.speed + "\n Player Speed =" + p1.carSpeed);
 
         if (this.goingSouth) {
             this.y += this.speed;
@@ -147,6 +153,30 @@ function trafficCarClass() {
             this.readyToRemove = true;
         }
 
+        if (this.directionOfPlayerCar == -1) {
+            if (p1.carY < this.y) {
+
+                var wallBounds = getTrackBoundriesAt(p1.carY);
+                var middleX = (wallBounds.leftSidePixels + wallBounds.rightSidePixels) / 2;
+
+                this.directionOfPlayerCar = 0;
+                if (p1.carX < middleX) {
+                    this.gotScored = 1;
+                    timeTenths += CAR_PASS_RIGHT_TIME_BONUS * TENTHS_PER_SECOND; 
+                }
+            }
+        }
+
+        if (this.directionOfPlayerCar == 1) {
+            if (p1.carY < this.y) {
+                if (p1.carSpeed > this.speed) {
+                    this.directionOfPlayerCar = 0;
+                    this.gotScored = 2;
+                    timeTenths += CAR_PASS_RIGHT_TIME_BONUS * TENTHS_PER_SECOND;
+                }
+            }
+        }
+
         var xDistFromP1 = Math.abs(p1.carX - this.x);
         var yDistFromP1 = Math.abs(p1.carY - this.y);
         var approxDist = xDistFromP1 + yDistFromP1;
@@ -159,6 +189,7 @@ function trafficCarClass() {
             {
                 this.steeringOverrideDir = 1;
             }
+
             this.steeringOverrideTimer = COLLISION_EFFECT_TIME;
             this.speed *= 0.5;
             p1.spinoutTimer = 15;
@@ -255,7 +286,17 @@ function trafficCarClass() {
             canvasContext.lineTo(trafficCarPoints[i].x, trafficCarPoints[i].y);
         }
 
-        canvasContext.strokeStyle = "white";
+        switch (this.gotScored){
+            case 0:
+                canvasContext.strokeStyle = "white";
+                break;
+            case 1:
+                canvasContext.strokeStyle = "green";
+                break;
+            case 2:
+                canvasContext.strokeStyle = "yellow";
+        }
+
         canvasContext.stroke();
         canvasContext.restore();
     }

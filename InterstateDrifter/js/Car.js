@@ -139,7 +139,7 @@ function carClass() {
             canvasContext.lineTo(carPoints[i].x, carPoints[i].y);
         }
 
-        canvasContext.strokeStyle = "white";
+        canvasContext.strokeStyle = "orange";
         canvasContext.stroke();
         canvasContext.restore();
     }

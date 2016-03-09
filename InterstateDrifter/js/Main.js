@@ -8,6 +8,7 @@ const ZOOM_MAX = 1.5;
 const ZOOM_MIN = 0.5;
 const RACE_TIME_SECONDS = 10;
 const TENTHS_PER_SECOND = 10;
+const CAR_PASS_RIGHT_TIME_BONUS = 5;
 
 // The player as represented by the car.
 var p1 = new carClass();
