@@ -38,6 +38,7 @@ function drawCarUI (forCar) {
         canvasContext.beginPath();
         canvasContext.moveTo(canvas.width - UI_TILE_THICKNESS * TRACK_W, 0);
         canvasContext.lineTo(canvas.width - UI_TILE_THICKNESS * TRACK_W, canvas.height);
+        canvasContext.strokeStyle = edgeLineColor;
         canvasContext.stroke();
 
         // Speedometer needle.

@@ -5,6 +5,7 @@ const STRAFE_PIVOT_AMT = 0.20;
 
 const CAR_MAX_SPEED = 13;
 const CAR_MIN_SPEED = 0;
+const CAR_SCORE_SPEED = 9;
 const CAR_GAS_SPEED = 0.21;
 const CAR_BRAKE_SPEED = 0.3;
 const CAR_HIT_WALL_SPEED = 0.95;
@@ -170,6 +171,14 @@ function carClass() {
         this.keyHeld_Gas = false;
         this.keyHeld_TurnLeft = false;
         this.keyHeld_TurnRight = false;
+    }
+
+    this.wreckCar = function(wreckFrames, timeLostSec) {
+
+        if (this.spinoutTimer <= 0) {
+            this.spinoutTimer = wreckFrames;
+            timeTenths -= timeLostSec * TENTHS_PER_SECOND;
+        }
     }
 
     this.carMove = function() {

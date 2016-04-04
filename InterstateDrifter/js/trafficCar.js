@@ -93,6 +93,7 @@ function trafficCarClass() {
     this.goingSouth = false;
     this.directionOfPlayerCar = 0;
     this.gotScored = 0;
+    this.spawnedTop = false;
 
     this.init = function() {
         this.goingSouth = Math.random() < 0.5;
@@ -106,7 +107,11 @@ function trafficCarClass() {
             this.directionOfPlayerCar = -1;
             this.startOnTrack(0.1, 0.4);
         } else {
-            this.directionOfPlayerCar = 1
+            if (this.spawnedTop) {
+                this.directionOfPlayerCar = 1;
+            } else {
+                this.directionOfPlayerCar = 0;
+            }
             this.startOnTrack(0.6, 0.9);
         }
     }
@@ -114,12 +119,14 @@ function trafficCarClass() {
     this.resetTop = function() {
         //this.y = 0;
         this.y = TRACK_H * 4;
+        this.spawnedTop = true;
     }
 
     this.resetBottom = function() {
         this.y = (TRACK_ROWS - 4) * TRACK_H;
+        this.spawnedTop = false;
         //this.y = p1.carY;
-        console.log("resetBottom: " + p1.carY + " " + (TRACK_ROWS - 4) * TRACK_H);
+        //console.log("resetBottom: " + p1.carY + " " + (TRACK_ROWS - 4) * TRACK_H);
         
     }
 
@@ -153,26 +160,33 @@ function trafficCarClass() {
             this.readyToRemove = true;
         }
 
+        // Opposing traffic
         if (this.directionOfPlayerCar == -1) {
             if (p1.carY < this.y) {
 
                 var wallBounds = getTrackBoundriesAt(p1.carY);
-                var middleX = (wallBounds.leftSidePixels + wallBounds.rightSidePixels) / 2;
+                var enoughOverToCount = 0.55;
+                var middleX = wallBounds.leftSidePixels * enoughOverToCount + 
+                              wallBounds.rightSidePixels * (1.0 - enoughOverToCount);
 
                 this.directionOfPlayerCar = 0;
-                if (p1.carX < middleX) {
+                if (p1.carX < middleX && p1.spinoutTimer <= 0 && p1.carSpeed > CAR_SCORE_SPEED) {
                     this.gotScored = 1;
                     timeTenths += CAR_PASS_RIGHT_TIME_BONUS * TENTHS_PER_SECOND; 
                 }
             }
         }
 
+        // Going same direction
         if (this.directionOfPlayerCar == 1) {
             if (p1.carY < this.y) {
                 if (p1.carSpeed > this.speed) {
                     this.directionOfPlayerCar = 0;
-                    this.gotScored = 2;
-                    timeTenths += CAR_PASS_RIGHT_TIME_BONUS * TENTHS_PER_SECOND;
+
+                    if (p1.spinoutTimer <= 0) {
+                        this.gotScored = 2;
+                        timeTenths += CAR_PASS_RIGHT_TIME_BONUS * TENTHS_PER_SECOND;
+                    }
                 }
             }
         }
@@ -192,7 +206,7 @@ function trafficCarClass() {
 
             this.steeringOverrideTimer = COLLISION_EFFECT_TIME;
             this.speed *= 0.5;
-            p1.spinoutTimer = 15;
+            p1.wreckCar(15, 10);
             //console.log("Car is hit!");
         }
 

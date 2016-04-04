@@ -14,6 +14,9 @@ const CAR_PASS_RIGHT_TIME_BONUS = 5;
 var p1 = new carClass();
 var trafficCars = [];
 
+//Audio
+var backgroundMusic = new BackgroundMusicClass();
+
 window.onload = function() {
     // Gets the canvas tag from html id = gameCanvas. 
     // Resolution set to 800 X 600 in html tag.
@@ -24,6 +27,8 @@ window.onload = function() {
     setupTrafficCarImage();
     // Need to load all the images at the beginning before starting gameplay.
     loadImages();
+
+    //backgroundMusic.loopSong("music/saddened");
 }
 
 function spawnTrafficCar() {
@@ -140,6 +145,8 @@ function drawEverything() {
 
     canvasContext.restore();
     drawCarUI(p1);
+
+    outlineRect(0,0, canvas.width,canvas.height, edgeLineColor);
 }
 
 function randomInRange(min, max) {

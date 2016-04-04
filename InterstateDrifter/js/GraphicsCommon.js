@@ -6,11 +6,19 @@ function colorRect(topLeftX, topLeftY, boxWidth, boxHeight, fillColor) {
     canvasContext.fillRect(topLeftX, topLeftY, boxWidth, boxHeight);
 }
 
-function colorLine(startX, startY, endX, endY, fillColor, width) {
+function outlineRect(topLeftX, topLeftY, boxWidth, boxHeight, strokeColor) {
+    canvasContext.beginPath();
+    canvasContext.rect(topLeftX, topLeftY, boxWidth, boxHeight);
+    canvasContext.strokeStyle = strokeColor;
+    canvasContext.lineWidth = 3;
+    canvasContext.stroke();
+}
+
+function colorLine(startX, startY, endX, endY, strokeColor, width) {
     canvasContext.beginPath();
     canvasContext.moveTo(startX, startY);
     canvasContext.lineTo(endX,endY);
-    canvasContext.strokeStyle = fillColor;
+    canvasContext.strokeStyle = strokeColor;
     canvasContext.lineWidth = width;
     canvasContext.stroke();
 }

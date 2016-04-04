@@ -32,6 +32,12 @@ var framesTillRoadWidthChange = 0;
 // UI
 const UI_TILE_THICKNESS = 4;
 
+// Track colors
+var centerLineColor = "yellow";
+var dashLineColor = "gray";
+var edgeLineColor = "red";
+var trackLineColor = "white";
+
 function initTrack() {
     trackVector = [];
     for (var i = 0; i < TRACK_ROWS; i++) {
@@ -193,7 +199,7 @@ function updateTrack() {
 function drawNonRoad(segmentTopLeftX, segmentTopLeftY)
 {
     var lineOverdrawLen = 600;
-
+    canvasContext.lineWidth = 1;
         // Area left of left road.
     for (var row = 0; row < trackVector.length; row++) {
         var leftSideTile = trackVector[row].colCenter - trackVector[row].roadSize/2;
@@ -274,33 +280,34 @@ function drawRoadEdgeSpecial(segmentTopLeftY, roadSideMult, roadColor) {
 }
 
 function drawLeftRoadEdge(segmentTopLeftY) {
-    drawRoadEdge(segmentTopLeftY, -1, "red");
+    drawRoadEdge(segmentTopLeftY, -1, edgeLineColor);
 }
 
 function drawRightRoadEdge(segmentTopLeftY) {
-    drawRoadEdge(segmentTopLeftY, 1, "red");
+    drawRoadEdge(segmentTopLeftY, 1, edgeLineColor);
 }
 
 function drawCenterLine(segmentTopLeftY) {
-    drawRoadEdge(segmentTopLeftY, -0.02, "yellow");
-    drawRoadEdge(segmentTopLeftY, 0.02, "yellow");
-    drawRoadEdgeSpecial(segmentTopLeftY, -.5, "gray");
-    drawRoadEdgeSpecial(segmentTopLeftY, .5, "gray");
+    drawRoadEdge(segmentTopLeftY, -0.02, centerLineColor);
+    drawRoadEdge(segmentTopLeftY, 0.02, centerLineColor);
+    drawRoadEdgeSpecial(segmentTopLeftY, -.5, dashLineColor);
+    drawRoadEdgeSpecial(segmentTopLeftY, .5, dashLineColor);
 }
 
 function drawTrack() {
     var trackIndex = 0;
     var segmentTopLeftX = 0;
     var segmentTopLeftY = p1.carOdom - TRACK_H;
-    canvasContext.strokeStyle="white";
+    canvasContext.strokeStyle=trackLineColor;
 
     segmentTopLeftY = p1.carOdom - TRACK_H;
 
     drawNonRoad(segmentTopLeftX, segmentTopLeftY);
 
+    canvasContext.lineWidth = 1.5;
     drawLeftRoadEdge(segmentTopLeftY);
-
-    drawCenterLine(segmentTopLeftY);
-
     drawRightRoadEdge(segmentTopLeftY);
+
+    canvasContext.lineWidth = 1;
+    drawCenterLine(segmentTopLeftY);
 } // End of func
