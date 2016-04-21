@@ -88,7 +88,7 @@ function moveEverything() {
     updateTrack();
     p1.carMove();
 
-    if (trafficCars.length < 4 && Math.random() < 0.02) {
+    if (trafficCars.length < maxCars && Math.random() < spawnFreq) {
         spawnTrafficCar();
     }
 

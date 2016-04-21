@@ -3,10 +3,8 @@ const STRAFE_MIN_SPEED = 0;
 const STRAFE_SPEED = 6;
 const STRAFE_PIVOT_AMT = 0.20;
 
-const CAR_MAX_SPEED = 13;
 const CAR_MIN_SPEED = 0;
 const CAR_SCORE_SPEED = 9;
-const CAR_GAS_SPEED = 0.21;
 const CAR_BRAKE_SPEED = 0.3;
 const CAR_HIT_WALL_SPEED = 0.95;
 const CAR_ROLL_TO_STOP = 0.981;

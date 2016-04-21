@@ -7,21 +7,12 @@ const TRACK_WALL_MARGIN = 1;
 var trackVector = [];
 
 // Road slope
-const TRACK_ROAD_SLOPE_MIN = 0.2;
-const TRACK_ROAD_SLOPE_MAX = 0.4;
-const FRAMES_TILL_ROAD_SLOPE_CHANGE_MIN = 30;
-const FRAMES_TILL_ROAD_SLOPE_CHANGE_MAX = 60;
-const TRACK_PERC_ANGLED_ROADS = 0.99;
 var roadCenterColumn = 6;
 var roadXDelta = 0;
 var framesTillRoadChange = 0;
 
 // Road thickness
-const FRAMES_TILL_ROAD_WIDTH_CHANGE_MIN = 30;
-const FRAMES_TILL_ROAD_WIDTH_CHANGE_MAX = 60;
 const TRACK_PERC_ROAD_WIDTH_STABLE = 0.70;
-const TRACK_ROAD_WIDTH_MIN = 4;
-const TRACK_ROAD_WIDTH_MAX = 10;
 const TRACK_ROAD_WIDTH_DELTA_MIN = 0.2;
 const TRACK_ROAD_WIDTH_DELTA_MAX = 0.5;
 const TRACK_ROAD_WIDTH_MIN_FOR_4_LANES = 8;
