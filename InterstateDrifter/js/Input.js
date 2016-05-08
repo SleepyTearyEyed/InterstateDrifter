@@ -5,9 +5,13 @@ const KEY_FORWARD_ARROW = 38;
 const KEY_MINUS = 189;
 const KEY_PLUS = 187;
 const KEY_SPACE = 32;
+const KEY_ONE  = 49;
+const KEY_TWO  = 50;
+const KEY_THREE  = 51;
+const KEY_FOUR  = 52;
 
 
-function initInput() {
+    function initInput() {
     document.addEventListener("keydown", keyPressed);
     document.addEventListener("keyup", keyReleased);
 
@@ -39,6 +43,22 @@ function keyPressed(evt) {
             reset();
         }
         return
+    }
+
+    if (evt.keyCode == KEY_ONE) {
+        stageNow = 0;
+    }
+
+    if (evt.keyCode == KEY_TWO) {
+        stageNow = 1;
+    }
+
+    if (evt.keyCode == KEY_THREE) {
+        stageNow = 2;
+    }
+
+    if (evt.keyCode == KEY_FOUR) {
+        stageNow = 3;
     }
 
     setKeyHoldState(evt.keyCode, p1, true);

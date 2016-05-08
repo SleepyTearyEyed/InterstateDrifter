@@ -1,7 +1,7 @@
 function drawCarUI (forCar) {
         var speedometerX = canvas.width - (UI_TILE_THICKNESS / 2) * TRACK_W;
         var speedometerY = canvas.height - TRACK_H;
-        var carSpeedRange = CAR_MAX_SPEED - CAR_MIN_SPEED;
+        var carSpeedRange = stageTuning[stageNow].maxSpeed - CAR_MIN_SPEED;
 
         canvasContext.fillStyle = "black";
         canvasContext.fillRect(canvas.width - UI_TILE_THICKNESS * TRACK_W, 0,
@@ -14,8 +14,8 @@ function drawCarUI (forCar) {
 
         var kValue = 0.90;
         forCar.needleSpeed = kValue * forCar.needleSpeed + (1.0-kValue) * forCar.carSpeed;
-        if (forCar.needleSpeed > CAR_MAX_SPEED) {
-            forCar.needleSpeed = CAR_MAX_SPEED;
+        if (forCar.needleSpeed > stageTuning[stageNow].maxSpeed) {
+            forCar.needleSpeed = stageTuning[stageNow].maxSpeed;
         }
         
         var carSpeedPerc = forCar.needleSpeed / carSpeedRange;
@@ -38,7 +38,7 @@ function drawCarUI (forCar) {
         canvasContext.beginPath();
         canvasContext.moveTo(canvas.width - UI_TILE_THICKNESS * TRACK_W, 0);
         canvasContext.lineTo(canvas.width - UI_TILE_THICKNESS * TRACK_W, canvas.height);
-        canvasContext.strokeStyle = edgeLineColor;
+        canvasContext.strokeStyle = stageTuning[stageNow].color;
         canvasContext.stroke();
 
         // Speedometer needle.
@@ -68,6 +68,11 @@ function drawCarUI (forCar) {
 
             // Distance in miles.
             var distanceMiles = forCar.totalDistance * MILES_PER_PIXEL;
+
+            if (stageNow < stageTuning.length - 1 && distanceMiles > stageTuning[stageNow + 1].startDistance) {
+                stageNow ++;
+            }
+
             canvasContext.font="30px Poiret One";
             canvasContext.textAlign = "center";
             canvasContext.fillText("Distance", centerTextX - 20, canvas.height / 2 - 35);

@@ -26,7 +26,7 @@ const UI_TILE_THICKNESS = 4;
 // Track colors
 var centerLineColor = "yellow";
 var dashLineColor = "gray";
-var edgeLineColor = "red";
+//var edgeLineColor = "red";
 var trackLineColor = "white";
 
 function initTrack() {
@@ -271,11 +271,11 @@ function drawRoadEdgeSpecial(segmentTopLeftY, roadSideMult, roadColor) {
 }
 
 function drawLeftRoadEdge(segmentTopLeftY) {
-    drawRoadEdge(segmentTopLeftY, -1, edgeLineColor);
+    drawRoadEdge(segmentTopLeftY, -1, stageTuning[stageNow].color);
 }
 
 function drawRightRoadEdge(segmentTopLeftY) {
-    drawRoadEdge(segmentTopLeftY, 1, edgeLineColor);
+    drawRoadEdge(segmentTopLeftY, 1, stageTuning[stageNow].color);
 }
 
 function drawCenterLine(segmentTopLeftY) {

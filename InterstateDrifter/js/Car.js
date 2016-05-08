@@ -162,7 +162,8 @@ function carClass() {
         this.carX = this.homeX;
         this.carY = this.homeY;
         this.carSpeed = 0;
-        this.clearControls();      
+        this.clearControls();
+        this.totalDistance = 0;
     }
 
     this.clearControls = function() {
@@ -194,7 +195,7 @@ function carClass() {
 
         // Position of the car vertically based on speed
         var carYRange = this.homeY - CAR_MIN_Y;
-        var carSpeedRange = CAR_MAX_SPEED - CAR_MIN_SPEED;
+        var carSpeedRange = stageTuning[stageNow].maxSpeed - CAR_MIN_SPEED;
         var carSpeedPerc = this.carSpeed / carSpeedRange;
         nextY = this.homeY - carYRange * carSpeedPerc;
 
@@ -256,7 +257,7 @@ function carClass() {
         {
             // Increase or decrease car's speed when up or down arrow is pushed.
             if (this.keyHeld_Gas && this.spinoutTimer <= 0) {
-                this.carSpeed += CAR_GAS_SPEED;
+                this.carSpeed += stageTuning[stageNow].gasSpeed;
             } else if (this.keyHeld_Brake) {
                 this.carSpeed -= CAR_BRAKE_SPEED;
             }
@@ -269,8 +270,8 @@ function carClass() {
             }
 
             // Limiting the car's speed.
-            if (this.carSpeed > CAR_MAX_SPEED) {
-                this.carSpeed = CAR_MAX_SPEED;
+            if (this.carSpeed > stageTuning[stageNow].maxSpeed) {
+                this.carSpeed = stageTuning[stageNow].maxSpeed;
             } else if (this.carSpeed < CAR_MIN_SPEED) {
                 this.carSpeed = CAR_MIN_SPEED;
             }

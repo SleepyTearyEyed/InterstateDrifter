@@ -76,6 +76,7 @@ function reset(){
     resetTimer();
     zoom = ZOOM_MIN;
     trafficCars = [];
+    stageNow = 0;
 }
 
 function resetTimer(){
@@ -88,7 +89,7 @@ function moveEverything() {
     updateTrack();
     p1.carMove();
 
-    if (trafficCars.length < maxCars && Math.random() < spawnFreq) {
+    if (trafficCars.length < stageTuning[stageNow].maxCars && Math.random() < stageTuning[stageNow].spawnFreq) {
         spawnTrafficCar();
     }
 
@@ -134,7 +135,7 @@ function drawEverything() {
     //zoom = 0.2; // To debug boundaries.
     canvasContext.scale(zoom, zoom);
     canvasContext.translate(-p1.carX, -p1.carY);
-    zoomGoal = ZOOM_MIN + (1.0 - p1.carSpeed / CAR_MAX_SPEED) * (ZOOM_MAX - ZOOM_MIN);
+    zoomGoal = ZOOM_MIN + (1.0 - p1.carSpeed / stageTuning[stageNow].maxSpeed) * (ZOOM_MAX - ZOOM_MIN);
     zoom = zoom * 0.9 + zoomGoal * 0.1;
     drawTrack();
     p1.drawCar();
@@ -146,7 +147,7 @@ function drawEverything() {
     canvasContext.restore();
     drawCarUI(p1);
 
-    outlineRect(0,0, canvas.width,canvas.height, edgeLineColor);
+    outlineRect(0,0, canvas.width,canvas.height, stageTuning[stageNow].color);
 }
 
 function randomInRange(min, max) {
