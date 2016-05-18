@@ -66,8 +66,8 @@ function keyPressed(evt) {
     if (evt.keyCode == KEY_PLUS) {
         zoom += 0.1;
 
-        if (zoom > ZOOM_MAX) {
-            zoom = ZOOM_MAX;
+        if (zoom > stageTuning[stageNow].zoomMax) {
+            zoom = stageTuning[stageNow].zoomMax;
         }
 
         console.log("Increased = " + zoom);
@@ -76,8 +76,8 @@ function keyPressed(evt) {
     if (evt.keyCode == KEY_MINUS) {
         zoom -= 0.1;
 
-        if (zoom < ZOOM_MIN) {
-            zoom = ZOOM_MIN;
+        if (zoom < stageTuning[stageNow].zoomMin) {
+            zoom = stageTuning[stageNow].zoomMin;
         }
 
         console.log("Decreased = " + zoom);

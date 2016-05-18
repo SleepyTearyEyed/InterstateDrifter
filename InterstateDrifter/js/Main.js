@@ -4,8 +4,6 @@ var zoom = 1;
 var zoomGoal = 1;
 var timeTenths;
 var attractLoop = true;
-const ZOOM_MAX = 1.5;
-const ZOOM_MIN = 0.5;
 const RACE_TIME_SECONDS = 10;
 const TENTHS_PER_SECOND = 10;
 const CAR_PASS_RIGHT_TIME_BONUS = 5;
@@ -74,7 +72,7 @@ function reset(){
     p1.carReset();
     trackCenterCar();
     resetTimer();
-    zoom = ZOOM_MIN;
+    zoom = stageTuning[stageNow].zoomMin;
     trafficCars = [];
     stageNow = 0;
 }
@@ -135,7 +133,7 @@ function drawEverything() {
     //zoom = 0.2; // To debug boundaries.
     canvasContext.scale(zoom, zoom);
     canvasContext.translate(-p1.carX, -p1.carY);
-    zoomGoal = ZOOM_MIN + (1.0 - p1.carSpeed / stageTuning[stageNow].maxSpeed) * (ZOOM_MAX - ZOOM_MIN);
+    zoomGoal = stageTuning[stageNow].zoomMin + (1.0 - p1.carSpeed / stageTuning[stageNow].maxSpeed) * (stageTuning[stageNow].zoomMax - stageTuning[stageNow].zoomMin);
     zoom = zoom * 0.9 + zoomGoal * 0.1;
     drawTrack();
     p1.drawCar();

@@ -140,28 +140,28 @@ function getUpdateVariance(changedVarString, deltaVarString, framesTillChangeStr
 function handleRoadSlope() {
     getUpdateVariance("roadCenterColumn",
                       "roadXDelta",
-                      "framesTillRoadChange", 
-                      FRAMES_TILL_ROAD_SLOPE_CHANGE_MIN, FRAMES_TILL_ROAD_SLOPE_CHANGE_MAX, 
-                      TRACK_ROAD_SLOPE_MIN, TRACK_ROAD_SLOPE_MAX,
-                      TRACK_PERC_ANGLED_ROADS);
+                      "framesTillRoadChange",
+                      stageTuning[stageNow].framesTillRoadSlopeChangeMin, stageTuning[stageNow].framesTillRoadSlopeChangeMax,
+                      stageTuning[stageNow].trackRoadSlopeMin, stageTuning[stageNow].trackRoadSlopeMax,
+                      stageTuning[stageNow].trackPercAngledRoads);
 }
 
 function handleRoadThickness() {
     getUpdateVariance("roadWidth",
                       "roadWidthDelta",
                       "framesTillRoadWidthChange", 
-                      FRAMES_TILL_ROAD_WIDTH_CHANGE_MIN, FRAMES_TILL_ROAD_WIDTH_CHANGE_MAX, 
+                      stageTuning[stageNow].framesTillRoadChangeMin, stageTuning[stageNow].framesTillRoadChangeMax,
                       TRACK_ROAD_WIDTH_DELTA_MIN, TRACK_ROAD_WIDTH_DELTA_MAX,
                       TRACK_PERC_ROAD_WIDTH_STABLE);
 }
 
 function fixRoad() {
-    if (roadWidth < TRACK_ROAD_WIDTH_MIN) {
-        roadWidth = TRACK_ROAD_WIDTH_MIN;
+    if (roadWidth < stageTuning[stageNow].trackMinThickness) {
+        roadWidth = stageTuning[stageNow].trackMinThickness;
     }
 
-    if (roadWidth > TRACK_ROAD_WIDTH_MAX) {
-        roadWidth = TRACK_ROAD_WIDTH_MAX;
+    if (roadWidth > stageTuning[stageNow].trackMaxThickness) {
+        roadWidth = stageTuning[stageNow].trackMaxThickness;
     }
 
     var tooFarLeft = TRACK_WALL_MARGIN + (roadWidth / 2);
