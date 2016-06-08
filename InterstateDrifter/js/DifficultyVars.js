@@ -60,7 +60,7 @@ var stageThree = {
     "spawnFreq": 0.08,
     "gasSpeed": 0.21,
     "maxSpeed": 13,
-    "trackMinThickness": 4,
+    "trackMinThickness": 5,
     "trackMaxThickness": 10,
     "trackRoadSlopeMin": 0.2,
     "trackRoadSlopeMax": 0.4,

@@ -210,13 +210,58 @@ function trafficCarClass() {
             //console.log("Car is hit!");
         }
 
-        var boundaries = getTrackBoundriesAt(this.y);
+        var boundaries = getTrackBoundriesAt1(this.y);
+        var carCenterMarginToRoadEdge = 15;
+        var carCenterMarginToRoadMedian = 30;
+        boundaries.leftSidePixels += carCenterMarginToRoadEdge;
+        boundaries.rightSidePixels -= carCenterMarginToRoadEdge;
         this.targetX = this.lanePerc * boundaries.leftSidePixels + (1.0 - this.lanePerc) * boundaries.rightSidePixels;
-
+        var middleOfRoad = (boundaries.leftSidePixels + boundaries.rightSidePixels) / 2;
         this.angle = -0.5 * Math.PI;
 
         if (this.steeringOverrideDir == 0) {
-            if (this.x < this.targetX) {
+            var safelyMiddleOfLanePerc;
+            if (this.lanePerc > 0.5) {
+                var distFromMiddle = Math.abs(0.75 - this.lanePerc) * 4;
+                safelyMiddleOfLanePerc = 1 - distFromMiddle * distFromMiddle * distFromMiddle;
+                if (this.x > middleOfRoad + carCenterMarginToRoadMedian) {
+                    safelyMiddleOfLanePerc = 0;
+                    this.x = middleOfRoad + carCenterMarginToRoadMedian;
+                }
+
+                if (this.x < boundaries.leftSidePixels) {
+                    safelyMiddleOfLanePerc = 0;
+                    this.x = boundaries.leftSidePixels;
+                }
+            }
+            else {
+                var distFromMiddle = Math.abs(0.25 - this.lanePerc) * 4;
+                safelyMiddleOfLanePerc = 1 - distFromMiddle * distFromMiddle * distFromMiddle;
+                if (this.x < middleOfRoad - carCenterMarginToRoadMedian) {
+                    safelyMiddleOfLanePerc = 0;
+                    this.x = middleOfRoad - carCenterMarginToRoadMedian;
+                }
+
+                if (this.x > boundaries.rightSidePixels) {
+                    safelyMiddleOfLanePerc = 0;
+                    this.x = boundaries.rightSidePixels;
+                }
+            }
+            var distForMaxTurn = 5 + 15 * safelyMiddleOfLanePerc;
+            var distToTarget = this.targetX - this.x;
+            var turnPerc = distToTarget / distForMaxTurn;
+
+            if (turnPerc < -1) {
+                turnPerc = -1;
+            }
+            else if (turnPerc > 1) {
+                turnPerc = 1;
+            }
+
+            this.x += LANE_CHANGE_SPEED * turnPerc;
+            this.angle += LANE_CHANGE_ANG * turnPerc;
+
+            /*if (this.x < this.targetX) {
                 this.x += LANE_CHANGE_SPEED;
                 this.angle += LANE_CHANGE_ANG;
             }
@@ -224,7 +269,7 @@ function trafficCarClass() {
             if (this.x > this.targetX) {
                 this.x -= LANE_CHANGE_SPEED;
                 this.angle -= LANE_CHANGE_ANG;
-            }
+            }*/
         } else if (this.steeringOverrideDir < 0) {
                 this.x -= LANE_CHANGE_SPEED * COLLISION_EFFECT_MULT;
                 this.angle -= LANE_CHANGE_ANG * COLLISION_EFFECT_MULT;
