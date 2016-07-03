@@ -210,7 +210,7 @@ function trafficCarClass() {
             //console.log("Car is hit!");
         }
 
-        var boundaries = getTrackBoundriesAt1(this.y);
+        var boundaries = getTrackBoundriesAt(this.y);
         var carCenterMarginToRoadEdge = 15;
         var carCenterMarginToRoadMedian = 30;
         boundaries.leftSidePixels += carCenterMarginToRoadEdge;
