@@ -8,6 +8,7 @@ const CLOSE_ENOUGH_TO_COLLIDE = 20;
 const CLOSE_ENOUGH_TO_AVOID = 60;
 const COLLISION_EFFECT_TIME = 15;
 const COLLISION_EFFECT_MULT = 3;
+const FRAMES_TILL_TURNING_TO_BLINK = 20;
 
 var trafficCarPoints = [{x: 0, y:7},
                         {x:0,y:2},
@@ -297,22 +298,24 @@ function trafficCarClass() {
         if (this.framesTillLaneSwitch < 0 && this.steeringOverrideDir == 0) {
             //this.lanePerc = randomInRange(LANE_MARGIN_PERC, 1.0 - LANE_MARGIN_PERC);
             if (this.goingSouth) {
-                if (Math.random() < 0.5) {
+                if (this.lanePerc > 0.7) {
                     this.lanePerc = 0.625;
                 }
                 else {
                     this.lanePerc = 0.875;
                 }
             }else {
-                if (Math.random() < 0.5) {
+                if (this.lanePerc < 1.0 - 0.7) {
                     this.lanePerc = 1.0 - 0.625;
                 }
                 else {
                     this.lanePerc = 1.0 - 0.875;
                 }
-            }         
+            }
 
-            this.framesTillLaneSwitch = Math.random() * 30 + 30;
+            var laneChangeRange = (stageTuning[stageNow].framesTillTrafficCarsLaneChangeMax - stageTuning[stageNow].framesTillTrafficCarsLaneChangeMin);
+
+            this.framesTillLaneSwitch = Math.random() * laneChangeRange + stageTuning[stageNow].framesTillTrafficCarsLaneChangeMin;
             this.speed += randomInRange(-TRAFFIC_CAR_SPEED_MAX_DELTA, TRAFFIC_CAR_SPEED_MAX_DELTA);
 
             if (this.speed < TRAFFIC_CAR_MIN_SPEED) {
@@ -345,7 +348,11 @@ function trafficCarClass() {
             canvasContext.lineTo(trafficCarPoints[i].x, trafficCarPoints[i].y);
         }
 
-        switch (this.gotScored){
+        if (this.framesTillLaneSwitch < FRAMES_TILL_TURNING_TO_BLINK && this.framesTillLaneSwitch % 4 < 2) {
+            canvasContext.strokeStyle = "red";
+
+
+        } else switch (this.gotScored){
             case 0:
                 canvasContext.strokeStyle = "white";
                 break;

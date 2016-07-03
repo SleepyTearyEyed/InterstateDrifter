@@ -128,6 +128,7 @@ function carClass() {
             canvasContext.rotate(randomInRange(0, 2 * Math.PI));
         }
         else {
+            
             canvasContext.rotate(this.carAng);
         }
         canvasContext.translate(-vectorWid / 2, -vectorHei / 2);
@@ -239,7 +240,9 @@ function carClass() {
         this.carSteering = kValue * this.carSteering + (1.0-kValue) * steerToward;
 
         // Setting visual angle
-        this.carAng = (-0.5 + STRAFE_PIVOT_AMT * this.carSteering) * Math.PI;
+        this.carAng = (-0.5 +
+                       STRAFE_PIVOT_AMT * this.carSteering * stageTuning[stageNow].carAngDampen) *
+                       Math.PI;
         // Steering the car
         nextX +=  STRAFE_SPEED * this.carSteering;
         this.carY = nextY;

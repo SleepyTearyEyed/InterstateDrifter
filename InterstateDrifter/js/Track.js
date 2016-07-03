@@ -1,7 +1,7 @@
 const TRACK_W = 40; // Track collision width.
 const TRACK_H = 40; // Track collision height.
 const TRACK_COLS = 20; // Number of track columns.
-const TRACK_ROWS = 36;
+const TRACK_ROWS = 40;
 const TRACK_WALL_MARGIN = 1;
 
 var trackVector = [];
