@@ -4,9 +4,11 @@ var zoom = 1;
 var zoomGoal = 1;
 var timeTenths;
 var attractLoop = true;
-const RACE_TIME_SECONDS = 10;
+var currentScore = 0;
+const RACE_TIME_SECONDS = 30;
 const TENTHS_PER_SECOND = 10;
-const CAR_PASS_RIGHT_TIME_BONUS = 5;
+const CAR_PASS_NORTHBOUND_SCORE_BONUS = 50;
+const CAR_PASS_SOUTHBOUND_SCORE_BONUS = 10;
 
 // The player as represented by the car.
 var p1 = new carClass();
@@ -75,6 +77,7 @@ function reset(){
     zoom = stageTuning[stageNow].zoomMin;
     trafficCars = [];
     stageNow = 0;
+    currentScore = 0;
 }
 
 function resetTimer(){
@@ -130,7 +133,7 @@ function drawEverything() {
     clearScreen();
     canvasContext.save();
     canvasContext.translate(gameAreaWidth/2, p1.carY - canvas.height);
-    //zoom = 0.2; // To debug boundaries.
+    //zoom = .35; // To debug boundaries.
     canvasContext.scale(zoom, zoom);
     canvasContext.translate(-p1.carX, -p1.carY);
     zoomGoal = stageTuning[stageNow].zoomMin + (1.0 - p1.carSpeed / stageTuning[stageNow].maxSpeed) * (stageTuning[stageNow].zoomMax - stageTuning[stageNow].zoomMin);

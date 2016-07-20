@@ -86,6 +86,12 @@ function drawCarUI (forCar) {
             canvasContext.fillText("Timer", centerTextX - 20, canvas.height / 4 - 35)
             canvasContext.textAlign = "left";
             canvasContext.fillText(whole + "." + decimal, centerTextX - 45, canvas.height / 4);
+
+            // Score
+            canvasContext.textAlign = "center";
+            canvasContext.fillText("Score", centerTextX - 20, canvas.height * 3/ 4 - 35)
+            canvasContext.textAlign = "left";
+            canvasContext.fillText(currentScore, centerTextX - 45, canvas.height * 3 / 4);
         }
         else {
             canvasContext.font="50px Poiret One";

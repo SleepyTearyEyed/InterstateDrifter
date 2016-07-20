@@ -177,7 +177,7 @@ function carClass() {
 
         if (this.spinoutTimer <= 0) {
             this.spinoutTimer = wreckFrames;
-            timeTenths -= timeLostSec * TENTHS_PER_SECOND;
+            //timeTenths -= timeLostSec * TENTHS_PER_SECOND;
         }
     }
 

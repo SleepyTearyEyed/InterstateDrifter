@@ -106,14 +106,14 @@ function trafficCarClass() {
 
         if (this.goingSouth) {
             this.directionOfPlayerCar = -1;
-            this.startOnTrack(0.1, 0.4);
+            this.startOnTrack(0.6, 0.9);
         } else {
             if (this.spawnedTop) {
                 this.directionOfPlayerCar = 1;
             } else {
                 this.directionOfPlayerCar = 0;
             }
-            this.startOnTrack(0.6, 0.9);
+            this.startOnTrack(0.1, 0.4);
         }
     }
 
@@ -137,11 +137,12 @@ function trafficCarClass() {
         /*console.log("startOnTrack: lanePerc=" + this.lanePerc + 
                     "\nleftSidePixels=" + boundaries.leftSidePixels + 
                     "\nrightSidePixels=" + boundaries.rightSidePixels);*/
-        this.x = (1.0 - this.lanePerc) * boundaries.leftSidePixels + this.lanePerc * boundaries.rightSidePixels; 
+        this.x = this.lanePerc * boundaries.leftSidePixels + (1.0 - this.lanePerc) * boundaries.rightSidePixels;
     }
 
     this.move = function() {
         this.y += p1.currentCarMoveDelta;
+
 
         //console.log("AI Speed = " + this.speed + "\n Player Speed =" + p1.carSpeed);
 
@@ -173,7 +174,7 @@ function trafficCarClass() {
                 this.directionOfPlayerCar = 0;
                 if (p1.carX < middleX && p1.spinoutTimer <= 0 && p1.carSpeed > CAR_SCORE_SPEED) {
                     this.gotScored = 1;
-                    timeTenths += CAR_PASS_RIGHT_TIME_BONUS * TENTHS_PER_SECOND; 
+                    currentScore += CAR_PASS_SOUTHBOUND_SCORE_BONUS;
                 }
             }
         }
@@ -186,7 +187,7 @@ function trafficCarClass() {
 
                     if (p1.spinoutTimer <= 0) {
                         this.gotScored = 2;
-                        timeTenths += CAR_PASS_RIGHT_TIME_BONUS * TENTHS_PER_SECOND;
+                        currentScore += CAR_PASS_NORTHBOUND_SCORE_BONUS;
                     }
                 }
             }
