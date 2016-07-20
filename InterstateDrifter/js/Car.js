@@ -44,8 +44,6 @@ function carClass() {
     this.currentCarMoveDelta = 0;
     this.carAng =  -.5 * Math.PI;
     this.carSteering = 0.0;
-    this.sensorLeft = 0;
-    this.sensorRight = 0;
 
     this.spinoutTimer = 0;
 
@@ -248,8 +246,6 @@ function carClass() {
         var wallBounds = getTrackBoundriesAt(this.carY);
         var wallXLeft = wallBounds.leftSidePixels;
         var wallXRight = wallBounds.rightSidePixels;
-        this.sensorLeft = wallXLeft;
-        this.sensorRight = wallXRight;
         var carXRange = TRACK_COLS - (wallXLeft + wallXRight);
 
         // Check if you are within the walls
