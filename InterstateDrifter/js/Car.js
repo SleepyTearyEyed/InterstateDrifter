@@ -1,5 +1,3 @@
-const STRAFE_MAX_SPEED = 6;
-const STRAFE_MIN_SPEED = 0;
 const STRAFE_SPEED = 6;
 const STRAFE_PIVOT_AMT = 0.20;
 
