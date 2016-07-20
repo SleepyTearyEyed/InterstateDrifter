@@ -38,7 +38,6 @@ function carClass() {
     this.needleSpeed = 0;
     this.needleWobbleOsc = 0;
     this.needleWobbleOsc2 = 0;
-    this.carTurnSpeed = 0;
     // Gets reset each row added.
     this.carOdom = 0;
     this.totalDistance = 0;
