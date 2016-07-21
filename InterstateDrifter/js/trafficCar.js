@@ -1,4 +1,3 @@
-const LANE_MARGIN_PERC = 0.15;
 const LANE_CHANGE_SPEED = 3.0;
 const LANE_CHANGE_ANG = 0.05 * Math.PI;
 const TRAFFIC_CAR_MIN_SPEED = 8;
@@ -27,8 +26,9 @@ var trafficCarPoints = [{x: 0, y:7},
 
 function mirrorVector() {
     var mirrorY = -1000;
+    var i; // For loop counter.
 
-    for (var i = 0; i < trafficCarPoints.length; i++) {
+    for (i = 0; i < trafficCarPoints.length; i++) {
         if (trafficCarPoints[i].y > mirrorY) {
             mirrorY = trafficCarPoints[i].y;
         }
@@ -37,7 +37,7 @@ function mirrorVector() {
     var mirrorCar = JSON.parse(JSON.stringify(trafficCarPoints));
     mirrorCar.reverse();
 
-    for (var i = 0; i < mirrorCar.length; i++) {
+    for (i = 0; i < mirrorCar.length; i++) {
         var distFromMirror = mirrorY - mirrorCar[i].y;
         mirrorCar[i].y = mirrorY + distFromMirror;
     }
@@ -115,13 +115,13 @@ function trafficCarClass() {
             }
             this.startOnTrack(0.1, 0.4);
         }
-    }
+    };
 
     this.resetTop = function() {
         //this.y = 0;
         this.y = TRACK_H * 4;
         this.spawnedTop = true;
-    }
+    };
 
     this.resetBottom = function() {
         this.y = (TRACK_ROWS - 4) * TRACK_H;
@@ -129,7 +129,7 @@ function trafficCarClass() {
         //this.y = p1.carY;
         //console.log("resetBottom: " + p1.carY + " " + (TRACK_ROWS - 4) * TRACK_H);
         
-    }
+    };
 
     this.startOnTrack = function(leftSide, rightSide) {
         var boundaries = getTrackBoundriesAt(this.y);
@@ -138,7 +138,7 @@ function trafficCarClass() {
                     "\nleftSidePixels=" + boundaries.leftSidePixels + 
                     "\nrightSidePixels=" + boundaries.rightSidePixels);*/
         this.x = this.lanePerc * boundaries.leftSidePixels + (1.0 - this.lanePerc) * boundaries.rightSidePixels;
-    }
+    };
 
     this.move = function() {
         this.y += p1.currentCarMoveDelta;
@@ -221,10 +221,11 @@ function trafficCarClass() {
         var middleOfRoad = (boundaries.leftSidePixels + boundaries.rightSidePixels) / 2;
         this.angle = -0.5 * Math.PI;
 
+        var distFromMiddle;
         if (this.steeringOverrideDir == 0) {
             var safelyMiddleOfLanePerc;
             if (this.lanePerc > 0.5) {
-                var distFromMiddle = Math.abs(0.75 - this.lanePerc) * 4;
+                distFromMiddle = Math.abs(0.75 - this.lanePerc) * 4;
                 safelyMiddleOfLanePerc = 1 - distFromMiddle * distFromMiddle * distFromMiddle;
                 if (this.x > middleOfRoad + carCenterMarginToRoadMedian) {
                     safelyMiddleOfLanePerc = 0;
@@ -237,7 +238,7 @@ function trafficCarClass() {
                 }
             }
             else {
-                var distFromMiddle = Math.abs(0.25 - this.lanePerc) * 4;
+                distFromMiddle = Math.abs(0.25 - this.lanePerc) * 4;
                 safelyMiddleOfLanePerc = 1 - distFromMiddle * distFromMiddle * distFromMiddle;
                 if (this.x < middleOfRoad - carCenterMarginToRoadMedian) {
                     safelyMiddleOfLanePerc = 0;
@@ -297,7 +298,6 @@ function trafficCarClass() {
         this.framesTillLaneSwitch--;
 
         if (this.framesTillLaneSwitch < 0 && this.steeringOverrideDir == 0) {
-            //this.lanePerc = randomInRange(LANE_MARGIN_PERC, 1.0 - LANE_MARGIN_PERC);
             if (this.goingSouth) {
                 if (this.lanePerc > 0.7) {
                     this.lanePerc = 0.625;
@@ -327,7 +327,7 @@ function trafficCarClass() {
                 this.speed = TRAFFIC_CAR_MAX_SPEED; 
             }
         }
-    }
+    };
 
     this.draw = function() {
         //colorRect(this.x - 5, this.y - 5, 10, 10, "yellow");
