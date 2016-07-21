@@ -57,7 +57,7 @@ function carClass() {
         this.controlKeyForTurnRight = rightKey;
         this.controlKeyForGas = forwardKey;
         this.controlKeyForBrake = downKey;
-    }
+    };
 
     this.initCar = function(whichName) {
         this.myName = whichName;
@@ -65,12 +65,13 @@ function carClass() {
         this.mirrorVector();
         this.setupVectorDim();
         trackCenterCar();
-    }
+    };
 
     this.mirrorVector = function() {
         var mirrorY = -1000;
+        var i; // For loop counter.
 
-        for (var i = 0; i < carPoints.length; i++) {
+        for (i = 0; i < carPoints.length; i++) {
             if (carPoints[i].y > mirrorY) {
                 mirrorY = carPoints[i].y;
             }
@@ -79,13 +80,13 @@ function carClass() {
         var mirrorCar = JSON.parse(JSON.stringify(carPoints));//carPoints.slice(0);
         mirrorCar.reverse();
 
-        for (var i = 0; i < mirrorCar.length; i++) {
+        for (i = 0; i < mirrorCar.length; i++) {
             var distFromMirror = mirrorY - mirrorCar[i].y;
             mirrorCar[i].y = mirrorY + distFromMirror;
         }
 
         carPoints = carPoints.concat(mirrorCar);
-    }
+    };
 
     this.setupVectorDim = function() {
         var leftMost = 1000.0;
@@ -114,7 +115,7 @@ function carClass() {
 
         vectorWid = rightMost - leftMost;
         vectorHei = bottomMost - topMost;
-    }
+    };
 
     this.drawCar = function() {
         canvasContext.save();
@@ -137,7 +138,7 @@ function carClass() {
         canvasContext.strokeStyle = "orange";
         canvasContext.stroke();
         canvasContext.restore();
-    }
+    };
 
     this.drawAngSeg = function(fromX, fromY, ang, dist1, dist2, color, width) {
         var startX = Math.cos(ang) * dist1 + fromX;
@@ -146,7 +147,7 @@ function carClass() {
         var endY = Math.sin(ang) * dist2 + fromY;
 
         colorLine(startX, startY, endX, endY, color, width);
-    }
+    };
 
     this.carReset = function() {
         this.carAng = -0.5 * Math.PI;
@@ -160,21 +161,20 @@ function carClass() {
         this.carSpeed = 0;
         this.clearControls();
         this.totalDistance = 0;
-    }
+    };
 
     this.clearControls = function() {
         this.keyHeld_Gas = false;
         this.keyHeld_TurnLeft = false;
         this.keyHeld_TurnRight = false;
-    }
+    };
 
-    this.wreckCar = function(wreckFrames, timeLostSec) {
+    this.wreckCar = function(wreckFrames) {
 
         if (this.spinoutTimer <= 0) {
             this.spinoutTimer = wreckFrames;
-            //timeTenths -= timeLostSec * TENTHS_PER_SECOND;
         }
-    }
+    };
 
     this.carMove = function() {
         var nextX = this.carX;
@@ -246,7 +246,6 @@ function carClass() {
         var wallBounds = getTrackBoundriesAt(this.carY);
         var wallXLeft = wallBounds.leftSidePixels;
         var wallXRight = wallBounds.rightSidePixels;
-        var carXRange = TRACK_COLS - (wallXLeft + wallXRight);
 
         // Check if you are within the walls
         if (nextX > wallXLeft && nextX< wallXRight)
@@ -281,6 +280,6 @@ function carClass() {
                 this.carX = wallXRight;
             }// Car off right side
         }// Car hit wall
-    }// End of car move
+    };// End of car move
 
 } // End of car class

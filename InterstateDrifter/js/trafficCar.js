@@ -208,7 +208,7 @@ function trafficCarClass() {
 
             this.steeringOverrideTimer = COLLISION_EFFECT_TIME;
             this.speed *= 0.5;
-            p1.wreckCar(15, 10);
+            p1.wreckCar(15);
             //console.log("Car is hit!");
         }
 
