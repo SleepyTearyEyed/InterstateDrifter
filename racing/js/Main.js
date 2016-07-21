@@ -9,7 +9,7 @@ window.onload = function() {
     canvasContext = canvas.getContext('2d');
 
     loadImages();
-}
+};
 
 function loadingDoneSoStartGame() {
     var framesPerSecond = 30;

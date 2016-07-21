@@ -20,17 +20,17 @@ function carClass() {
         this.controlKeyForReverse = backKey;
         this.controlKeyForTurnLeft = leftKey;
         this.controlKeyForTurnRight = rightKey;
-    }
+    };
 
     this.initCar = function(whichGraphic, whichName) {
         this.myBitmap = whichGraphic;
         this.myName = whichName;
         this.carReset();
-    }
+    };
 
     this.drawCar = function() {
         drawBitmapCenteredAtLocationWithRotation(this.myBitmap, this.carX, this.carY, this.carAng);
-    }
+    };
 
     this.carReset = function() {
         this.carSpeed = 0;
@@ -53,7 +53,7 @@ function carClass() {
 
         this.carX = this.homeX;
         this.carY = this.homeY;
-    }
+    };
 
     this.carMove = function() {
         if (this.keyHeld_Gas) {

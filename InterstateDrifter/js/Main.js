@@ -29,7 +29,7 @@ window.onload = function() {
     loadImages();
 
     //backgroundMusic.loopSong("music/saddened");
-}
+};
 
 function spawnTrafficCar() {
     var tempCar = new trafficCarClass();

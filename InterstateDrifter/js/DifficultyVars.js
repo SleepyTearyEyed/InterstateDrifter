@@ -35,7 +35,7 @@ var stageOne = {
     "startDistance": 0.0,
     "zoomMin": 0.5,
     "zoomMax": 1.5
-}
+};
 
 var stageTwo = {
     "color": "#ff0000",
@@ -58,7 +58,7 @@ var stageTwo = {
     "startDistance": 3,
     "zoomMin": 0.5,
     "zoomMax": 1.5
-}
+};
 
 var stageThree = {
     "color": "#00ffff",
@@ -81,7 +81,7 @@ var stageThree = {
     "startDistance": 6,
     "zoomMin": 0.5,
     "zoomMax": 1.5
-}
+};
 
 var stageFour = {
     "color": "#ffbbbb",
@@ -104,7 +104,7 @@ var stageFour = {
     "startDistance": 9,
     "zoomMin": 0.6,
     "zoomMax": 1.5
-}
+};
 
 var stageTuning = [stageOne, stageTwo, stageThree, stageFour];
 var stageNow = 0;

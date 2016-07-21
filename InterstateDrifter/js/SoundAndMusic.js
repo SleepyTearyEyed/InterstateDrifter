@@ -23,7 +23,7 @@ function BackgroundMusicClass() {
     musicSound = new Audio(filenameWithPath+audioFormat);
     musicSound.loop = true;
     musicSound.play();
-  }
+  };
   
   this.startOrStopMusic = function() {
     if(musicSound.paused) {

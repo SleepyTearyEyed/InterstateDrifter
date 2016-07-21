@@ -83,13 +83,13 @@ function drawCarUI (forCar) {
             var whole = Math.floor(timeTenths / 10);
             var decimal = timeTenths - whole * 10;
             canvasContext.textAlign = "center";
-            canvasContext.fillText("Timer", centerTextX - 20, canvas.height / 4 - 35)
+            canvasContext.fillText("Timer", centerTextX - 20, canvas.height / 4 - 35);
             canvasContext.textAlign = "left";
             canvasContext.fillText(whole + "." + decimal, centerTextX - 45, canvas.height / 4);
 
             // Score
             canvasContext.textAlign = "center";
-            canvasContext.fillText("Score", centerTextX - 20, canvas.height * 3/ 4 - 35)
+            canvasContext.fillText("Score", centerTextX - 20, canvas.height * 3/ 4 - 35);
             canvasContext.textAlign = "left";
             canvasContext.fillText(currentScore, centerTextX - 45, canvas.height * 3 / 4);
         }
