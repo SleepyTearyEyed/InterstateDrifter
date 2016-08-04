@@ -46,19 +46,11 @@ function keyPressed(evt) {
     }
 
     if (evt.keyCode == KEY_ONE) {
-        stageNow = 0;
+        levelDown();
     }
 
     if (evt.keyCode == KEY_TWO) {
-        stageNow = 1;
-    }
-
-    if (evt.keyCode == KEY_THREE) {
-        stageNow = 2;
-    }
-
-    if (evt.keyCode == KEY_FOUR) {
-        stageNow = 3;
+        levelUp(true);
     }
 
     setKeyHoldState(evt.keyCode, p1, true);

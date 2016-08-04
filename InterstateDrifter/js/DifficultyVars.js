@@ -34,7 +34,8 @@ var stageOne = {
     "framesTillTrafficCarsLaneChangeMax": 120,
     "startDistance": 0.0,
     "zoomMin": 0.5,
-    "zoomMax": 1.5
+    "zoomMax": 1.5,
+    "pointsPerStage": 100
 };
 
 var stageTwo = {
@@ -57,7 +58,8 @@ var stageTwo = {
     "framesTillTrafficCarsLaneChangeMax": 120,
     "startDistance": 3,
     "zoomMin": 0.5,
-    "zoomMax": 1.5
+    "zoomMax": 1.5,
+    "pointsPerStage": 200
 };
 
 var stageThree = {
@@ -80,7 +82,8 @@ var stageThree = {
     "framesTillTrafficCarsLaneChangeMax": 120,
     "startDistance": 6,
     "zoomMin": 0.5,
-    "zoomMax": 1.5
+    "zoomMax": 1.5,
+    "pointsPerStage": 400
 };
 
 var stageFour = {
@@ -103,7 +106,8 @@ var stageFour = {
     "framesTillTrafficCarsLaneChangeMax": 120,
     "startDistance": 9,
     "zoomMin": 0.6,
-    "zoomMax": 1.5
+    "zoomMax": 1.5,
+    "pointsPerStage": 800
 };
 
 var stageTuning = [stageOne, stageTwo, stageThree, stageFour];

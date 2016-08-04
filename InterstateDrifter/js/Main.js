@@ -5,8 +5,9 @@ var zoomGoal = 1;
 var timeTenths;
 var attractLoop = true;
 var currentScore = 0;
-const RACE_TIME_SECONDS = 30;
-const TENTHS_PER_SECOND = 10;
+var currentScoreGoal = 0;
+//const RACE_TIME_SECONDS = 180;
+//const TENTHS_PER_SECOND = 10;
 const CAR_PASS_NORTHBOUND_SCORE_BONUS = 50;
 const CAR_PASS_SOUTHBOUND_SCORE_BONUS = 10;
 
@@ -59,11 +60,10 @@ function loadingDoneSoStartGame() {
     setInterval(function()
     {
         if (attractLoop == false) {
-            timeTenths--;
-            if (timeTenths < 0) {
+            timeTenths++;
+            /*if (timeTenths < 0) {
                 timeTenths = 0;
-                attractLoop = true;
-            }
+            }*/
         }
     }, 100);
 }
@@ -78,17 +78,52 @@ function reset(){
     trafficCars = [];
     stageNow = 0;
     currentScore = 0;
+    currentScoreGoal = stageTuning[stageNow].pointsPerStage;
 }
 
 function resetTimer(){
-    timeTenths = RACE_TIME_SECONDS * TENTHS_PER_SECOND;
+    timeTenths = 0;//RACE_TIME_SECONDS * TENTHS_PER_SECOND;
 }
+
+function levelUp(isCheating) {
+    if (stageNow < stageTuning.length - 1) {
+        if (isCheating) {
+            currentScore = currentScoreGoal;
+        }
+        stageNow++;
+        currentScoreGoal += stageTuning[stageNow].pointsPerStage;
+    }
+    else {
+        console.log("Error, exceeded max level.")
+    }
+};
+
+function levelDown() {
+    if (stageNow > 0){
+        currentScoreGoal -= stageTuning[stageNow].pointsPerStage;
+        stageNow --;
+        currentScore = currentScoreGoal - stageTuning[stageNow].pointsPerStage;
+    }
+    else {
+        attractLoop = true;
+    }
+};
 
 // Everything gets moved then drawn. 
 // Updating the car's position and the level first then draw them on screen.
 function moveEverything() {
     updateTrack();
     p1.carMove();
+
+    if (currentScore >= currentScoreGoal)
+    {
+        if (stageNow < stageTuning.length - 1){
+            levelUp(false);
+        }
+        else {
+            attractLoop = true;
+        }
+    }
 
     if (trafficCars.length < stageTuning[stageNow].maxCars && Math.random() < stageTuning[stageNow].spawnFreq) {
         spawnTrafficCar();
