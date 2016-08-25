@@ -174,7 +174,7 @@ function trafficCarClass() {
                 this.directionOfPlayerCar = 0;
                 if (p1.carX < middleX && p1.spinoutTimer <= 0 && p1.carSpeed > CAR_SCORE_SPEED) {
                     this.gotScored = 1;
-                    currentScore += CAR_PASS_SOUTHBOUND_SCORE_BONUS;
+                    spawnPointPopper(CAR_PASS_SOUTHBOUND_SCORE_BONUS, this.x, this.y);
                 }
             }
         }
@@ -187,7 +187,7 @@ function trafficCarClass() {
 
                     if (p1.spinoutTimer <= 0) {
                         this.gotScored = 2;
-                        currentScore += CAR_PASS_NORTHBOUND_SCORE_BONUS;
+                        spawnPointPopper(CAR_PASS_NORTHBOUND_SCORE_BONUS, this.x, this.y);
                     }
                 }
             }

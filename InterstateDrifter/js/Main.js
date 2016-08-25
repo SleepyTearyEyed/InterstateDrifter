@@ -14,6 +14,7 @@ const CAR_PASS_SOUTHBOUND_SCORE_BONUS = 10;
 // The player as represented by the car.
 var p1 = new carClass();
 var trafficCars = [];
+var pointPoppers = [];
 
 //Audio
 var backgroundMusic = new BackgroundMusicClass();
@@ -37,6 +38,14 @@ function spawnTrafficCar() {
 
     tempCar.init();
     trafficCars.push(tempCar);
+}
+
+function spawnPointPopper(scoreVal, pointPopperX, pointPopperY) {
+    var tempPopper = new PointPop();
+
+    tempPopper.init(scoreVal, pointPopperX, pointPopperY);
+    pointPoppers.push(tempPopper);
+    currentScore += scoreVal;
 }
 
 function loadingDoneSoStartGame() {
@@ -129,6 +138,7 @@ function moveEverything() {
         spawnTrafficCar();
     }
 
+    // Car collisions below
     for (var i = 0; i < trafficCars.length; i ++) {
         for (var ii = i+1; ii < trafficCars.length; ii ++) {
             var laneDiff = Math.abs(trafficCars[i].lanePerc - trafficCars[ii].lanePerc);
@@ -150,7 +160,8 @@ function moveEverything() {
             }
         }
     }
-    
+
+    // Updating car positions
     for (var i = 0; i < trafficCars.length; i ++) {
         trafficCars[i].move();
     }
@@ -160,6 +171,17 @@ function moveEverything() {
             trafficCars.splice(i, 1);
         }
     }
+
+    // Updating point popper positions
+    for (var i = 0; i < pointPoppers.length; i ++) {
+        pointPoppers[i].move();
+    }
+
+    for (var i = pointPoppers.length-1; i >= 0; i--) {
+        if (pointPoppers[i].readyToRemove) {
+            pointPoppers.splice(i, 1);
+        }
+    }
 }
 
 function drawEverything() {
@@ -167,7 +189,7 @@ function drawEverything() {
 
     clearScreen();
     canvasContext.save();
-    canvasContext.translate(gameAreaWidth/2, p1.carY - canvas.height);
+    canvasContext.translate(canvas.width / 2, p1.carY - canvas.height);
     //zoom = .35; // To debug boundaries.
     canvasContext.scale(zoom, zoom);
     canvasContext.translate(-p1.carX, -p1.carY);
@@ -178,6 +200,10 @@ function drawEverything() {
 
     for (var i = 0; i < trafficCars.length; i ++) {
         trafficCars[i].draw();
+    }
+
+    for (var i = 0; i < pointPoppers.length; i ++) {
+        pointPoppers[i].draw();
     }
 
     canvasContext.restore();
