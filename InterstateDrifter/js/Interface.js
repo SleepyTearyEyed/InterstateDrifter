@@ -81,19 +81,19 @@ function drawCarUI (forCar) {
             canvasContext.textAlign = "center";
             canvasContext.fillText("Distance", centerTextX - 20, canvas.height / 2 - 35);
             canvasContext.textAlign = "left";
-            canvasContext.fillText(distanceMiles.toFixed(1), centerTextX - 50, canvas.height / 2);
+            canvasContext.fillText(distanceMiles.toFixed(1), centerTextX - 45, canvas.height / 2);
 
             // Timer
             canvasContext.textAlign = "center";
-            canvasContext.fillText("Timer", centerTextX - 20, canvas.height / 4 - 35);
+            canvasContext.fillText("Time", centerTextX - 20, canvas.height / 4 - 35);
             canvasContext.textAlign = "left";
             canvasContext.fillText(displayTextString, centerTextX - 45, canvas.height / 4);
 
             // Score
             canvasContext.textAlign = "center";
-            canvasContext.fillText("Score", centerTextX - 20, canvas.height * 3/ 4 - 35);
+            canvasContext.fillText("Score", centerTextX - 20, canvas.height * 0.725 - 35);
             canvasContext.textAlign = "left";
-            canvasContext.fillText(currentScore, centerTextX - 45, canvas.height * 3 / 4);
+            canvasContext.fillText(currentScore, centerTextX - 45, canvas.height * 0.725);
 
             // Score goal
             canvasContext.textAlign = "center";
