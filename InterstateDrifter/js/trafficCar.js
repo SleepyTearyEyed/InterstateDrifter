@@ -162,40 +162,74 @@ function trafficCarClass() {
             this.readyToRemove = true;
         }
 
-        // Opposing traffic
-        if (this.directionOfPlayerCar == -1) {
-            if (p1.carY < this.y) {
+        var xDistFromP1 = Math.abs(p1.carX - this.x);
+        var yDistFromP1 = Math.abs(p1.carY - this.y);
+        var approxDist = xDistFromP1 + yDistFromP1;
 
-                var wallBounds = getTrackBoundriesAt(p1.carY);
-                var enoughOverToCount = 0.55;
-                var middleX = wallBounds.leftSidePixels * enoughOverToCount + 
-                              wallBounds.rightSidePixels * (1.0 - enoughOverToCount);
+        if (this.gotScored == 0) {
+            // Opposing traffic
+            if (this.directionOfPlayerCar == -1) {
+                if (p1.carY < this.y) {
 
-                this.directionOfPlayerCar = 0;
-                if (p1.carX < middleX && p1.spinoutTimer <= 0 && p1.carSpeed > CAR_SCORE_SPEED) {
-                    this.gotScored = 1;
-                    spawnPointPopper(CAR_PASS_SOUTHBOUND_SCORE_BONUS, this.x, this.y);
+                    var wallBounds = getTrackBoundriesAt(p1.carY);
+                    var enoughOverToCount = 0.55;
+                    var middleX = wallBounds.leftSidePixels * enoughOverToCount +
+                        wallBounds.rightSidePixels * (1.0 - enoughOverToCount);
+
+                    this.directionOfPlayerCar = 0;
+                    if (p1.carX < middleX && p1.spinoutTimer <= 0 && p1.carSpeed > CAR_SCORE_SPEED) {
+                        //this.gotScored = 1;
+                        if (xDistFromP1 <= CAR_PASS_SOUTHBOUND_SCORE_DIST_NEAR) {
+                            spawnPointPopper(CAR_PASS_SOUTHBOUND_SCORE_BONUS_NEAR, this.x, this.y);
+                            this.gotScored = CAR_PASS_SOUTHBOUND_GOT_SCORED_NEAR;
+                            console.log("South Near!");
+                        }
+                        else if (xDistFromP1 <= CAR_PASS_SOUTHBOUND_SCORE_DIST_MED) {
+                            spawnPointPopper(CAR_PASS_SOUTHBOUND_SCORE_BONUS_MED, this.x, this.y);
+                            this.gotScored = CAR_PASS_SOUTHBOUND_GOT_SCORED_MED;
+                            console.log("South Med!");
+                        }
+                        else if (xDistFromP1 <= CAR_PASS_SOUTHBOUND_SCORE_DIST_FAR) {
+                            spawnPointPopper(CAR_PASS_SOUTHBOUND_SCORE_BONUS_FAR, this.x, this.y);
+                            this.gotScored = CAR_PASS_SOUTHBOUND_GOT_SCORED_FAR;
+                            console.log("South Far!");
+                        }
+                        //spawnPointPopper(Math.floor(xDistFromP1), this.x, this.y);
+                        //spawnPointPopper(CAR_PASS_SOUTHBOUND_SCORE_BONUS, this.x, this.y);
+                    }
                 }
             }
-        }
 
-        // Going same direction
-        if (this.directionOfPlayerCar == 1) {
-            if (p1.carY < this.y) {
-                if (p1.carSpeed > this.speed) {
-                    this.directionOfPlayerCar = 0;
+            // Going same direction
+            if (this.directionOfPlayerCar == 1) {
+                if (p1.carY < this.y) {
+                    if (p1.carSpeed > this.speed) {
+                        this.directionOfPlayerCar = 0;
 
-                    if (p1.spinoutTimer <= 0) {
-                        this.gotScored = 2;
-                        spawnPointPopper(CAR_PASS_NORTHBOUND_SCORE_BONUS, this.x, this.y);
+                        if (p1.spinoutTimer <= 0) {
+                            //this.gotScored = 2;
+                            if (xDistFromP1 <= CAR_PASS_NORTHBOUND_SCORE_DIST_NEAR) {
+                                spawnPointPopper(CAR_PASS_NORTHBOUND_SCORE_BONUS_NEAR, this.x, this.y);
+                                this.gotScored = CAR_PASS_NORTHBOUND_GOT_SCORED_NEAR;
+                                console.log("North Near!");
+                            }
+                            else if (xDistFromP1 <= CAR_PASS_NORTHBOUND_SCORE_DIST_MED) {
+                                spawnPointPopper(CAR_PASS_NORTHBOUND_SCORE_BONUS_MED, this.x, this.y);
+                                this.gotScored = CAR_PASS_NORTHBOUND_GOT_SCORED_MED;
+                                console.log("North Med!");
+                            }
+                            else if (xDistFromP1 <= CAR_PASS_NORTHBOUND_SCORE_DIST_FAR) {
+                                spawnPointPopper(CAR_PASS_NORTHBOUND_SCORE_BONUS_FAR, this.x, this.y);
+                                this.gotScored = CAR_PASS_NORTHBOUND_GOT_SCORED_FAR;
+                                console.log("North Far!");
+                            }
+                            //spawnPointPopper(CAR_PASS_NORTHBOUND_SCORE_BONUS, this.x, this.y);
+                            //spawnPointPopper(Math.floor(xDistFromP1), this.x, this.y);
+                        }
                     }
                 }
             }
         }
-
-        var xDistFromP1 = Math.abs(p1.carX - this.x);
-        var yDistFromP1 = Math.abs(p1.carY - this.y);
-        var approxDist = xDistFromP1 + yDistFromP1;
 
         if (approxDist < CLOSE_ENOUGH_TO_COLLIDE) {
             if (this.x < p1.carX) {
@@ -354,14 +388,27 @@ function trafficCarClass() {
 
 
         } else switch (this.gotScored){
-            case 0:
-                canvasContext.strokeStyle = "white";
+            case CAR_PASS_SOUTHBOUND_GOT_SCORED_FAR:
+                canvasContext.strokeStyle = "red";
                 break;
-            case 1:
+            case CAR_PASS_SOUTHBOUND_GOT_SCORED_MED:
+                canvasContext.strokeStyle = "yellow";
+                break;
+            case CAR_PASS_SOUTHBOUND_GOT_SCORED_NEAR:
                 canvasContext.strokeStyle = "green";
                 break;
-            case 2:
+            case CAR_PASS_NOT_SCORED:
+                canvasContext.strokeStyle = "white";
+                break;
+            case CAR_PASS_NORTHBOUND_GOT_SCORED_NEAR:
+                canvasContext.strokeStyle = "green";
+                break;
+            case CAR_PASS_NORTHBOUND_GOT_SCORED_MED:
                 canvasContext.strokeStyle = "yellow";
+                break;
+            case CAR_PASS_NORTHBOUND_GOT_SCORED_FAR:
+                canvasContext.strokeStyle = "red";
+                break;
         }
 
         canvasContext.stroke();
