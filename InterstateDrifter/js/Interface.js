@@ -1,3 +1,5 @@
+const PERC_BAR_DISPLAY_FILL_RATE = 0.3;
+
 function drawCarUI (forCar) {
         var speedometerX = canvas.width - (UI_TILE_THICKNESS / 2) * TRACK_W;
         var speedometerY = 65;
@@ -88,19 +90,50 @@ function drawCarUI (forCar) {
             var timeX = 50;
             var timeY = 55;
 
-            canvasContext.textAlign = "center";
-            canvasContext.fillText("Time", timeX, timeY);
+            //canvasContext.textAlign = "center";
+            //canvasContext.fillText("Time", timeX, timeY);
             canvasContext.textAlign = "left";
-            canvasContext.fillText(displayTextString, timeX - 25, timeY + 35);
+            canvasContext.fillText(displayTextString, timeX - 12.5, timeY + 17.5);
+
+            //canvasContext.textAlign = "center";
+            //canvasContext.fillText("sec", timeX + 25, timeY + 17.5);
 
             // Score
             var scoreX = canvas.width / 2;
             var scoreY = timeY;
 
-            canvasContext.textAlign = "center";
-            canvasContext.fillText("Score/Goal", scoreX, scoreY);
+            //canvasContext.textAlign = "center";
+            //canvasContext.fillText("Score/Goal", scoreX, scoreY);
+            //canvasContext.fillText("Progress", scoreX, scoreY);
             //canvasContext.textAlign = "left";
-            canvasContext.fillText(currentScore + "/" + currentScoreGoal, scoreX, scoreY + 35);
+            //canvasContext.fillText(currentScore + "/" + currentScoreGoal, scoreX, scoreY +
+            var prevGoalLevel = 0;
+            if (stageNow > 0) {
+                prevGoalLevel = stageTuning[stageNow - 1].pointsPerStage;
+            }
+            var scorePercTowardGoal = (currentScore - prevGoalLevel) /
+                                      (currentScoreGoal - prevGoalLevel);
+            var barWidth = 100;
+            var barLeft = scoreX - (barWidth / 2);
+            var percBarSizeX = barWidth * scorePercTowardGoal;
+            if (scorePercBarDisplayX < percBarSizeX) {
+                scorePercBarDisplayX += PERC_BAR_DISPLAY_FILL_RATE;
+            }
+
+            colorRect(barLeft, scoreY, percBarSizeX, 7, "white");
+            colorRect(barLeft, scoreY, scorePercBarDisplayX, 7, stageTuning[stageNow].color);
+
+            // Level progress bar.
+
+            // Top of rect
+            canvasContext.beginPath();
+            canvasContext.moveTo(barLeft, scoreY);
+            canvasContext.lineTo(barLeft + barWidth, scoreY);
+            canvasContext.lineTo(barLeft + barWidth, scoreY + 7);
+            canvasContext.lineTo(barLeft, scoreY + 7);
+            canvasContext.lineTo(barLeft, scoreY);
+            canvasContext.strokeStyle = "white";
+            canvasContext.stroke();
 
             // Score goal
             /*canvasContext.textAlign = "center";

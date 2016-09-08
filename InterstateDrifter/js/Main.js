@@ -6,6 +6,7 @@ var timeTenths;
 var attractLoop = true;
 var currentScore = 0;
 var currentScoreGoal = 0;
+var scorePercBarDisplayX = 0;
 //const RACE_TIME_SECONDS = 180;
 //const TENTHS_PER_SECOND = 10;
 const CAR_PASS_NORTHBOUND_SCORE_BONUS_FAR = 7;
@@ -34,7 +35,24 @@ const CAR_PASS_SOUTHBOUND_GOT_SCORED_NEAR = -1;
 const CAR_PASS_SOUTHBOUND_GOT_SCORED_MED = -2;
 const CAR_PASS_SOUTHBOUND_GOT_SCORED_FAR = -3;
 
+var nearWords = ["Perfect!", "Amazing!", "So Close!"];
+var medWords = ["Not bad", "Pretty close", "OK"];
+var farWords = ["Out there!", "Bummer", "Try harder!"];
 
+function passingDistToWord(passDist) {
+    passDist = Math.abs(passDist); // so we can test against north.
+    if (passDist == CAR_PASS_NORTHBOUND_GOT_SCORED_NEAR) {
+        var nearWordIdx = Math.floor(Math.random() * nearWords.length);
+        return nearWords[nearWordIdx];
+    } else if (passDist == CAR_PASS_NORTHBOUND_GOT_SCORED_MED) {
+        var medWordsIdx = Math.floor(Math.random() * medWords.length);
+        return medWords[medWordsIdx];
+    } else if (passDist == CAR_PASS_NORTHBOUND_GOT_SCORED_FAR) {
+        var farWordsIdx = Math.floor(Math.random() * farWords.length);
+        return farWords[farWordsIdx];
+    }
+    return "dist unknown";
+}
 
 // The player as represented by the car.
 var p1 = new carClass();
@@ -65,10 +83,10 @@ function spawnTrafficCar() {
     trafficCars.push(tempCar);
 }
 
-function spawnPointPopper(scoreVal, pointPopperX, pointPopperY) {
+function spawnPointPopper(scoreVal, pointPopperX, pointPopperY, displayWord) {
     var tempPopper = new PointPop();
 
-    tempPopper.init(scoreVal, pointPopperX, pointPopperY);
+    tempPopper.init(scoreVal, pointPopperX, pointPopperY, displayWord);
     pointPoppers.push(tempPopper);
     currentScore += scoreVal;
 }

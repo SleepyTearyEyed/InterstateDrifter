@@ -180,17 +180,17 @@ function trafficCarClass() {
                     if (p1.carX < middleX && p1.spinoutTimer <= 0 && p1.carSpeed > CAR_SCORE_SPEED) {
                         //this.gotScored = 1;
                         if (xDistFromP1 <= CAR_PASS_SOUTHBOUND_SCORE_DIST_NEAR) {
-                            spawnPointPopper(CAR_PASS_SOUTHBOUND_SCORE_BONUS_NEAR, this.x, this.y);
+                            spawnPointPopper(CAR_PASS_SOUTHBOUND_SCORE_BONUS_NEAR, this.x, this.y, passingDistToWord(CAR_PASS_NORTHBOUND_GOT_SCORED_NEAR));
                             this.gotScored = CAR_PASS_SOUTHBOUND_GOT_SCORED_NEAR;
                             console.log("South Near!");
                         }
                         else if (xDistFromP1 <= CAR_PASS_SOUTHBOUND_SCORE_DIST_MED) {
-                            spawnPointPopper(CAR_PASS_SOUTHBOUND_SCORE_BONUS_MED, this.x, this.y);
+                            spawnPointPopper(CAR_PASS_SOUTHBOUND_SCORE_BONUS_MED, this.x, this.y, passingDistToWord(CAR_PASS_NORTHBOUND_GOT_SCORED_MED));
                             this.gotScored = CAR_PASS_SOUTHBOUND_GOT_SCORED_MED;
                             console.log("South Med!");
                         }
                         else if (xDistFromP1 <= CAR_PASS_SOUTHBOUND_SCORE_DIST_FAR) {
-                            spawnPointPopper(CAR_PASS_SOUTHBOUND_SCORE_BONUS_FAR, this.x, this.y);
+                            spawnPointPopper(CAR_PASS_SOUTHBOUND_SCORE_BONUS_FAR, this.x, this.y, passingDistToWord(CAR_PASS_NORTHBOUND_GOT_SCORED_FAR));
                             this.gotScored = CAR_PASS_SOUTHBOUND_GOT_SCORED_FAR;
                             console.log("South Far!");
                         }
@@ -209,17 +209,17 @@ function trafficCarClass() {
                         if (p1.spinoutTimer <= 0) {
                             //this.gotScored = 2;
                             if (xDistFromP1 <= CAR_PASS_NORTHBOUND_SCORE_DIST_NEAR) {
-                                spawnPointPopper(CAR_PASS_NORTHBOUND_SCORE_BONUS_NEAR, this.x, this.y);
+                                spawnPointPopper(CAR_PASS_NORTHBOUND_SCORE_BONUS_NEAR, this.x, this.y, passingDistToWord(CAR_PASS_SOUTHBOUND_GOT_SCORED_NEAR));
                                 this.gotScored = CAR_PASS_NORTHBOUND_GOT_SCORED_NEAR;
                                 console.log("North Near!");
                             }
                             else if (xDistFromP1 <= CAR_PASS_NORTHBOUND_SCORE_DIST_MED) {
-                                spawnPointPopper(CAR_PASS_NORTHBOUND_SCORE_BONUS_MED, this.x, this.y);
+                                spawnPointPopper(CAR_PASS_NORTHBOUND_SCORE_BONUS_MED, this.x, this.y, passingDistToWord(CAR_PASS_SOUTHBOUND_GOT_SCORED_MED));
                                 this.gotScored = CAR_PASS_NORTHBOUND_GOT_SCORED_MED;
                                 console.log("North Med!");
                             }
                             else if (xDistFromP1 <= CAR_PASS_NORTHBOUND_SCORE_DIST_FAR) {
-                                spawnPointPopper(CAR_PASS_NORTHBOUND_SCORE_BONUS_FAR, this.x, this.y);
+                                spawnPointPopper(CAR_PASS_NORTHBOUND_SCORE_BONUS_FAR, this.x, this.y, passingDistToWord(CAR_PASS_SOUTHBOUND_GOT_SCORED_FAR));
                                 this.gotScored = CAR_PASS_NORTHBOUND_GOT_SCORED_FAR;
                                 console.log("North Far!");
                             }
