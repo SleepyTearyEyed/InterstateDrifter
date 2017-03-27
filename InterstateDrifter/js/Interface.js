@@ -6,8 +6,6 @@ function drawCarUI (forCar) {
         var carSpeedRange = stageTuning[stageNow].maxSpeed - CAR_MIN_SPEED;
 
         canvasContext.fillStyle = "black";
-        //canvasContext.fillRect(canvas.width - UI_TILE_THICKNESS * TRACK_W, 0,
-            //UI_TILE_THICKNESS * TRACK_W, canvas.height);
 
         forCar.needleWobbleOsc += Math.random() * 0.07;
 
@@ -36,12 +34,6 @@ function drawCarUI (forCar) {
         for (var r = Math.PI; r < Math.PI * 2 + .1; r+=radsBetweenLines) {
             forCar.drawAngSeg(speedometerX, speedometerY, r, needleLength * 0.9, needleLength * 1.2, "white", 2);
         }
-
-        /*canvasContext.beginPath();
-        canvasContext.moveTo(canvas.width - UI_TILE_THICKNESS * TRACK_W, 0);
-        canvasContext.lineTo(canvas.width - UI_TILE_THICKNESS * TRACK_W, canvas.height);
-        canvasContext.strokeStyle = stageTuning[stageNow].color;
-        canvasContext.stroke();*/
 
         // Speedometer needle.
         colorLine(speedometerX, speedometerY, needleEndX, needleEndY, "red", 1);
@@ -75,57 +67,42 @@ function drawCarUI (forCar) {
             canvasContext.font="30px Poiret One";
             canvasContext.textAlign = "center";
 
-            // Distance in miles.
-            /*var distanceMiles = forCar.totalDistance * MILES_PER_PIXEL;
-
-            if (stageNow < stageTuning.length - 1 && distanceMiles > stageTuning[stageNow + 1].startDistance) {
-                stageNow ++;
-            }
-
-            canvasContext.fillText("Distance", centerTextX - 20, canvas.height / 2 - 35);
-            canvasContext.textAlign = "left";
-            canvasContext.fillText(distanceMiles.toFixed(1), centerTextX - 45, canvas.height / 2);*/
-
             // Timer
             var timeX = 50;
             var timeY = 55;
 
-            //canvasContext.textAlign = "center";
-            //canvasContext.fillText("Time", timeX, timeY);
             canvasContext.textAlign = "left";
             canvasContext.fillText(displayTextString, timeX - 12.5, timeY + 17.5);
 
-            //canvasContext.textAlign = "center";
-            //canvasContext.fillText("sec", timeX + 25, timeY + 17.5);
 
             // Score
             var scoreX = canvas.width / 2;
             var scoreY = timeY;
 
-            //canvasContext.textAlign = "center";
-            //canvasContext.fillText("Score/Goal", scoreX, scoreY);
-            //canvasContext.fillText("Progress", scoreX, scoreY);
-            //canvasContext.textAlign = "left";
-            //canvasContext.fillText(currentScore + "/" + currentScoreGoal, scoreX, scoreY +
             var prevGoalLevel = 0;
             if (stageNow > 0) {
                 prevGoalLevel = stageTuning[stageNow - 1].pointsPerStage;
+                console.log("Prev Goal Level:" + prevGoalLevel);
             }
+
             var scorePercTowardGoal = (currentScore - prevGoalLevel) /
                                       (currentScoreGoal - prevGoalLevel);
             var barWidth = 100;
             var barLeft = scoreX - (barWidth / 2);
             var percBarSizeX = barWidth * scorePercTowardGoal;
+
             if (scorePercBarDisplayX < percBarSizeX) {
                 scorePercBarDisplayX += PERC_BAR_DISPLAY_FILL_RATE;
+            }
+            else if (scorePercBarDisplayX > percBarSizeX + PERC_BAR_DISPLAY_FILL_RATE) {
+                var kVal = 0.9;
+                scorePercBarDisplayX = scorePercBarDisplayX * kVal + percBarSizeX * (1.0 - kVal);
             }
 
             colorRect(barLeft, scoreY, percBarSizeX, 7, "white");
             colorRect(barLeft, scoreY, scorePercBarDisplayX, 7, stageTuning[stageNow].color);
 
             // Level progress bar.
-
-            // Top of rect
             canvasContext.beginPath();
             canvasContext.moveTo(barLeft, scoreY);
             canvasContext.lineTo(barLeft + barWidth, scoreY);
@@ -134,12 +111,6 @@ function drawCarUI (forCar) {
             canvasContext.lineTo(barLeft, scoreY);
             canvasContext.strokeStyle = "white";
             canvasContext.stroke();
-
-            // Score goal
-            /*canvasContext.textAlign = "center";
-            canvasContext.fillText("Score goal", centerTextX - 20, canvas.height * 5 / 6 - 35);
-            canvasContext.textAlign = "left";
-            canvasContext.fillText(currentScoreGoal, centerTextX - 45, canvas.height * 5 / 6);*/
         }
         else {
             canvasContext.font="50px Poiret One";

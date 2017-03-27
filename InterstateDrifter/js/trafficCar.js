@@ -29,6 +29,10 @@ function mirrorVector() {
     var i; // For loop counter.
 
     for (i = 0; i < trafficCarPoints.length; i++) {
+        trafficCarPoints[i].y -= 7;
+    }
+
+    for (i = 0; i < trafficCarPoints.length; i++) {
         if (trafficCarPoints[i].y > mirrorY) {
             mirrorY = trafficCarPoints[i].y;
         }

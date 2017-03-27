@@ -73,7 +73,7 @@ window.onload = function() {
     // Need to load all the images at the beginning before starting gameplay.
     loadImages();
 
-    //backgroundMusic.loopSong("music/saddened");
+    backgroundMusic.loopSong("music/interstate_loop");
 };
 
 function spawnTrafficCar() {

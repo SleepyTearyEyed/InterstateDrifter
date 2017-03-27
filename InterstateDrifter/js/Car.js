@@ -10,6 +10,7 @@ const CAR_ROLL_TO_STOP_WHILE_TURN = 0.975;
 
 const CAR_MIN_Y = 1000;
 const CAR_EDGE_MARGIN = 50;
+const CAR_WALL_LEFT_MARGIN = 14;
 
 const MILES_PER_PIXEL = (1.0/528.0) / 12;
 
@@ -70,6 +71,10 @@ function carClass() {
     this.mirrorVector = function() {
         var mirrorY = -1000;
         var i; // For loop counter.
+
+        for (i = 0; i < carPoints.length; i++) {
+            carPoints[i].y -= 7;
+        }
 
         for (i = 0; i < carPoints.length; i++) {
             if (carPoints[i].y > mirrorY) {
@@ -137,6 +142,13 @@ function carClass() {
 
         canvasContext.strokeStyle = "orange";
         canvasContext.stroke();
+
+        canvasContext.moveTo(-10.0, -CAR_PASS_SOUTHBOUND_SCORE_DIST_NEAR);
+        canvasContext.lineTo(10.0, -CAR_PASS_SOUTHBOUND_SCORE_DIST_NEAR);
+        canvasContext.moveTo(-10.0, CAR_PASS_SOUTHBOUND_SCORE_DIST_NEAR);
+        canvasContext.lineTo(10.0, CAR_PASS_SOUTHBOUND_SCORE_DIST_NEAR);
+        canvasContext.stroke();
+
         canvasContext.restore();
     };
 
@@ -244,7 +256,7 @@ function carClass() {
 
 
         var wallBounds = getTrackBoundriesAt(this.carY);
-        var wallXLeft = wallBounds.leftSidePixels;
+        var wallXLeft = wallBounds.leftSidePixels + CAR_WALL_LEFT_MARGIN;
         var wallXRight = wallBounds.rightSidePixels;
 
         // Check if you are within the walls
